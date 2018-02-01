@@ -133,7 +133,7 @@ class TACache:
     # Insere uma linha da memória na cache.
     #
     # @param address : int - endereço de origem.
-    # @param valor : list - valores da linha da memória.
+    # @param linha : list - valores da linha da memória.
     #
     # return None.
     #
@@ -218,7 +218,7 @@ def getTACacheLineSize(tac):
 # 
 # @param tac : TACache - referência para cache.
 # @param address : int - endereço de origem.
-# @param value : INT - inteiro pora passagem por valor.
+# @param value : INT - inteiro por passagem por valor.
 #
 # @return bool.
 #
@@ -242,7 +242,7 @@ def setTACacheLine(tac, address, line):
 #
 # @param tac : TACache - referência para cache.
 # @param address : int - endereço de origem do dado.
-# @param value : int - valor propriamente dito
+# @param value : int - valor propriamente dito.
 #
 # return bool.
 #

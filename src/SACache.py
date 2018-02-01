@@ -1,8 +1,6 @@
 import math
 
 from src.util import isPotenciaDois
-from src.util import CACHE_HIT
-from src.util import CACHE_MISS
 from src.TACache import TACache
 
 
@@ -97,7 +95,7 @@ class SACache:
     #
     # @return int.
     #
-    def getBitsLookUp(self, address):
+    def getBitsLookup(self, address):
         return (address >> self.__tamOffset) & (2 ** self.__tamLookup - 1)
 
     # Representação em string.
@@ -109,6 +107,43 @@ class SACache:
         for i in range(1, self.__numConjuntos):
             out += '\n#{}:\n{}'.format(i, self.__conjuntos[i])
         return out
+
+    # Obtém o dado salvo do endereço.
+    #
+    # @param address : int - endereço de 32 bits (4 bytes).
+    # @param valor : INT - inteiro para passagem por valor.
+    #
+    # @return bool.
+    #
+    def getDado(self, address, valor):
+        lookup = self.getBitsLookup(address)
+        tac = self.__conjuntos[lookup]
+        return tac.getDado(address, valor)
+
+
+    # Insere uma linha da memória na cache.
+    #
+    # @param address : int - endereço de origem.
+    # @param linha : list - valores da linha da memória.
+    #
+    # return None.
+    #
+    def setLine(self, address, linha):
+        lookup = self.getBitsLookup(address)
+        tac = self.__conjuntos[lookup]
+        tac.setLine(address, linha)
+
+    # Insere um dado lido da memória na cache.
+    #
+    # @param address : int - endereço de origem do dado.
+    # @param valor : int - valor propriamente dito
+    #
+    # return bool.
+    #
+    def setDado(self, address, valor):
+        lookup = self.getBitsLookup(address)
+        tac = self.__conjuntos[lookup]
+        return tac.setDado(address, valor)
 
 
 ### FUNÇÕES DE INTERFACE (requisitos do Dr. Saúde):
@@ -144,3 +179,55 @@ def getSACacheCapacity(sac):
 #
 def getSACacheLineSize(sac):
     return sac.getTamLinha()
+
+
+# Tenta obter um valor na cache pelo endereço passado.
+#
+# @param sac : SACache - referência para cache.
+# @param address : int - endereço de origem.
+# @param value : INT - inteiro por passagem por valor.
+#
+# return bool.
+#
+def getSACacheData(sac, address, value):
+    return sac.getDado(address, value)
+
+
+# Insere uma linha da memória na cache.
+#
+# @param sac : SACache - referência para cache.
+# @param address : int - endereço de origem.
+# @param line : list - valores da linha da memória.
+#
+# return None.
+#
+def setSACacheLine(sac, address, line):
+    sac.setLine(address, line)
+
+
+# Insere um dado lido da memória na cache.
+#
+# @param tac : SACache - referência para cache.
+# @param address : int - endereço de origem do dado.
+# @param value : int - valor propriamente dito.
+#
+# return bool.
+#
+def setSACacheData(sac, address, value):
+    return sac.setDado(address, value)
+
+
+# Cria nova SAC com as mesmas características, mas vazia.
+#
+# @param sac : SACache - cache de referência.
+#
+# return SACache.
+#
+def duplicateSACache(sac):
+    c = sac.getCapacidade()
+    a = sac.getNumLinhas()
+    l = sac.getTamLinha()
+    return SACache(c, a, l)
+
+
+

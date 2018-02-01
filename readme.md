@@ -34,7 +34,7 @@
 - __OK__ setDado
 - __OK__ buscaTag
 
-> functions - __REQUISITOS__
+> functions 
 
 - __OK__ createTACache
 - __OK__ getTACacheCapacity
@@ -47,7 +47,7 @@
 
 ## SACache.py
 
-> Class SACache
+> class SACache
 
 - __OK__ init
 - __OK__ verificaArgumentos
@@ -55,10 +55,21 @@
 - __OK__ getTamLinha
 - __OK__ getNumLinhas
 - __OK__ getNumConjuntos
-- __OK__ getBitsLookUp
+- __OK__ getBitsLookup
 - __OK__ repr
+- __OK__ getDado
+- __OK__ setLine
+- __OK__ setDado
 
 
+> functions 
 
+- __OK__ createSACache
+- __OK__ getSACacheCapacity
+- __OK__ getSACacheLineSize
+- __OK__ getSACacheData
+- __OK__ setSACacheLine
+- __OK__ setSACacheData
+- __OK__ duplicateSACache
 
 
