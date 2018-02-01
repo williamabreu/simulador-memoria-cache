@@ -8,11 +8,11 @@
 
 - __OK__ isPotenciaDois
  
- > class INT
- 
- - __OK__ init
- - __OK__ get
- - __OK__ set 
+> class INT
+
+- __OK__ init
+- __OK__ get
+- __OK__ set 
 
 
 
@@ -42,3 +42,23 @@
 - __OK__ getTACacheData
 - __OK__ setTACacheLine
 - __OK__ setTACacheData
+
+
+
+## SACache.py
+
+> Class SACache
+
+- __OK__ init
+- __OK__ verificaArgumentos
+- __OK__ getCapacidade
+- __OK__ getTamLinha
+- __OK__ getNumLinhas
+- __OK__ getNumConjuntos
+- __OK__ getBitsLookUp
+- __OK__ repr
+
+
+
+
+

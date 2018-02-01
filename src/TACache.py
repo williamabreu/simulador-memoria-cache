@@ -1,26 +1,25 @@
 import math
-import util
 
-# Constantes:
-CACHE_MISS = False
-CACHE_HIT = True
+from src.util import isPotenciaDois
+from src.util import CACHE_HIT
+from src.util import CACHE_MISS
 
 
 class TACache:
     # Construtor da cache totalmente associativa.
     #
     # @param capacidade : int - tamanho total em bytes, deve ser potência de 2 e
-    #                           múltiplo do número de linhas.
+    #                           múltiplo de bytesLinha.
     #
-    # @param numLinhas : int - número de bytes por linha, deve ser potência de 2.
+    # @param tamLinha : int - número de bytes por linha, deve ser potência de 2.
     #
-    def __init__(self, capacidade, numLinhas):
-        self.__verificaArgumentos(capacidade, numLinhas)
+    def __init__(self, capacidade, tamLinha):
+        self.__verificaArgumentos(capacidade, tamLinha)
 
         self.__capacidade = capacidade
-        self.__numLinhas = numLinhas
-        self.__tamLinha = capacidade // numLinhas
-        self.__tamOffset = int(math.log(self.__tamLinha, 2))
+        self.__tamLinha = tamLinha
+        self.__numLinhas = capacidade // tamLinha
+        self.__tamOffset = int(math.log(tamLinha, 2))
 
         self.__tags = [None] * self.__numLinhas
 
@@ -38,21 +37,21 @@ class TACache:
     #
     # @return None.
     #
-    def __verificaArgumentos(self, capacidade, numLinhas):
-        if type(numLinhas) != int:
-            raise ValueError('Número de Linhas inválido, deve ser inteiro.')
-
-        if not util.isPotenciaDois(numLinhas):
-            raise ValueError('Número de Linhas inválido, deve ser potência de 2.')
-
+    def __verificaArgumentos(self, capacidade, tamLinha):
         if type(capacidade) != int:
             raise ValueError('Capacidade inválida, deve ser inteiro.')
 
-        if not util.isPotenciaDois(capacidade):
+        if type(tamLinha) != int:
+            raise ValueError('Tamanho da Linha inválido, deve ser inteiro.')
+
+        if not isPotenciaDois(capacidade):
             raise ValueError('Capacidade inválida, deve ser potência de 2.')
 
-        if capacidade % numLinhas != 0:
-            raise ValueError('Capacidade inválida, deve ser múltiplo de numLinhas.')
+        if not isPotenciaDois(tamLinha):
+            raise ValueError('Tamanho da Linha inválido, deve ser potência de 2.')
+
+        if capacidade % tamLinha != 0:
+            raise ValueError('Capacidade inválida, deve ser múltiplo de bytesLinha.')
 
     # Obtém a posição correta para se inserir uma nova tag na lista (fila circular)
     #
@@ -74,7 +73,7 @@ class TACache:
     #
     # @return int.
     #
-    def getTamanhoLinha(self):
+    def getTamLinha(self):
         return self.__tamLinha
 
     # Obtém o número de linhas da cache.
@@ -108,7 +107,7 @@ class TACache:
     #
     def __repr__(self):
         out = '{} -> {}'.format(self.__tags[0], self.__matriz[0])
-        for i in range(1, self.__numLinhas - 1):
+        for i in range(1, self.__numLinhas):
             out += '\n{} -> {}'.format(self.__tags[i], self.__matriz[i])
         return out
 
@@ -187,7 +186,7 @@ class TACache:
 # Cria nova cache totalmente associativa.
 # 
 # @param c : int - capacidade.
-# @param l : int - número de linhas.
+# @param l : int - tamanho da linha.
 # 
 # @return TACache.
 #
@@ -212,7 +211,7 @@ def getTACacheCapacity(tac):
 # @return int.
 #
 def getTACacheLineSize(tac):
-    return tac.getTamanhoLinha()
+    return tac.getTamLinha()
 
 
 # Tenta obter um valor na cache pelo endereço passado.
