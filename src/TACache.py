@@ -2,15 +2,18 @@ from src.util import isPotenciaDois
 from src.util import log2
 from src.util import CACHE_HIT
 from src.util import CACHE_MISS
+from src.util import Word
 
 
 class TACache:
     # Construtor da cache totalmente associativa.
     #
     # @param capacidade : int - tamanho total em bytes, deve ser potência de 2 e
-    #                           múltiplo de bytesLinha.
+    #                           múltiplo de tamLinha.
     #
     # @param tamLinha : int - número de bytes por linha, deve ser potência de 2.
+    #
+    # @raise TypeError, ValueError.
     #
     def __init__(self, capacidade, tamLinha):
         self.__verificaArgumentos(capacidade, tamLinha)
@@ -23,17 +26,17 @@ class TACache:
 
         self.__tags = [None] * self.__numLinhas
 
-        # cada célula tem 4 bytes (32 bits)
-        self.__matriz = [[None] * self.__numColunas for i in range(self.__numLinhas)]
+        # cada célula tem uma word de 4 bytes (32 bits)
+        self.__matriz = [[Word(0)] * self.__numColunas for i in range(self.__numLinhas)]
 
         self.__posInserirFila = 0
 
     # Lança exceção se algum dos argumentos do construtor estiver errado.
     # 
     # @param capacidade : int - mesmo do construtor.
-    # @param numLinhas : int - mesmo do construtor.
+    # @param tamLinha : int - mesmo do construtor.
     #
-    # @raise ValueError.
+    # @raise TypeError, ValueError.
     #
     # @return None.
     #
@@ -90,19 +93,39 @@ class TACache:
     #
     # @param address : int - endereço de 32 bits (4 bytes).
     #
+    # @raise TypeError, ValueError.
+    #
     # @return int.
     #
     def getBitsOffset(self, address):
+        self.__verificaAddress(address)
         return address & (self.__numColunas - 1)
 
     # Obtém os bits de tag de um dado endereço. 
     #
     # @param address : int - endereço de 32 bits (4 bytes).
     #
+    # @raise TypeError, ValueError.
+    #
     # @return int.
     #
     def getBitsTag(self, address):
+        self.__verificaAddress(address)
         return address >> self.__tamOffset
+
+    # Verifica corretude do endereço.
+    #
+    # @param address : int - endereço de 32 bits.
+    #
+    # @raise TypeError, ValueError.
+    #
+    # @return None.
+    #
+    def __verificaAddress(self, address):
+        if type(address) != int:
+            raise TypeError('Endereço deve ser int.')
+        if address.bit_length() > 32 or address < 0:
+            raise ValueError('Endereço inválido.')
 
     # Representação em string.
     #
@@ -117,18 +140,23 @@ class TACache:
     # Obtém o dado salvo do endereço. 
     #
     # @param address : int - endereço de 32 bits (4 bytes).
-    # @param valor : INT - inteiro para passagem por valor.
+    # @param word : Word - inteiro de 32 bits passado por valor.
+    #
+    # @raise TypeError, ValueError.
     #
     # @return bool.
     #
-    def getDado(self, address, valor):
+    def getDado(self, address, word):
+        self.__verificaAddress(address)
+        self.__verificaWord(word)
+
         tag = self.getBitsTag(address)
         offset = self.getBitsOffset(address)
-
         pos = self.buscaTag(tag)
 
         if pos != -1:
-            valor.set(self.__matriz[pos][offset])
+            celula = self.__matriz[pos][offset]
+            word.set(celula.get())
             return CACHE_HIT
         else:
             return CACHE_MISS
@@ -138,12 +166,17 @@ class TACache:
     # @param address : int - endereço de origem.
     # @param linha : list - valores da linha da memória.
     #
+    # @raise TypeError, IndexError, ValueError.
+    #
     # return None.
     #
     def setLine(self, address, linha):
+        self.__verificaAddress(address)
+        self.__verificaLinha(linha)
+
         tag = self.getBitsTag(address)
         pos = self.buscaTag(tag)
-        linha = [linha[i] for i in range(self.__numColunas)]
+        linha = [word.copy() for word in linha]
 
         if pos != -1:
             self.__matriz[pos] = linha
@@ -155,11 +188,16 @@ class TACache:
     # Insere um dado lido da memória na cache.
     #
     # @param address : int - endereço de origem do dado.
-    # @param valor : int - valor propriamente dito
+    # @param word : Word - dado a ser inserido.
+    #
+    # @raise TypeError, ValueError.
     #
     # return bool.
     #
-    def setDado(self, address, valor):
+    def setDado(self, address, word):
+        self.__verificaAddress(address)
+        self.__verificaWord(word)
+
         tag = self.getBitsTag(address)
         linha = self.buscaTag(tag)
 
@@ -167,7 +205,7 @@ class TACache:
             return CACHE_MISS
         else:
             offset = self.getBitsOffset(address)
-            self.__matriz[linha][offset] = valor
+            self.__matriz[linha][offset] = word.copy()
             return CACHE_HIT
 
     # Busca posição (linha) onde está a tag na cache. Se não
@@ -182,6 +220,37 @@ class TACache:
             if tag == self.__tags[i]:
                 return i
         return -1
+
+    # Verifica corretude da palavra de 32 bits.
+    #
+    # @param word : Word - palavra 32 bits.
+    #
+    # @raise TypeError.
+    #
+    # @return None.
+    #
+    def __verificaWord(self, word):
+        if type(word) != Word:
+            raise TypeError('Word inválida.')
+
+    # Verifica corretude da linha da memória.
+    #
+    # @param linha : list - lista de words.
+    #
+    # @raise TypeError, IndexError.
+    #
+    # @return None.
+    #
+    def __verificaLinha(self, linha):
+        if type(linha) != list:
+            raise TypeError('Linha deve ser list.')
+
+        if len(linha) > self.__tamLinha:
+            raise IndexError('Linha é maior que a capacidade da cache.')
+
+        for item in linha:
+            if type(item) != Word:
+                raise TypeError('Elementos da linha devem ser Word.')
 
 
 ### FUNÇÕES DE INTERFACE (requisitos do Dr. Saúde):

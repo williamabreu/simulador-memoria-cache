@@ -65,10 +65,17 @@ class Word:
     def get(self):
         return self.__valor
 
-    # Representação em hexadecimal.
+    # Método para criar cópia.
+    #
+    # @return Word.
+    #
+    def copy(self):
+        return Word(self.__valor)
+
+    # Representação.
     #
     # @return str.
     #
     def __repr__(self):
-        return hex(self.__valor)
+        return str(self.__valor)
 

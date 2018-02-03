@@ -7,12 +7,11 @@ class SACache:
     # Construtor da cache associativa por conjuntos.
     #
     # @param capacidade : int - tamanho total em bytes, deve ser potência de 2 e
-    #                           múltiplo de (numLinhas) x (associatividade).
+    #                           múltiplo de (tamLinha) x (associatividade).
     #
-    # @param associatividade : int - número de conjuntos TAC dentro da SAC, deve
-    #                          ser potência de 2.
+    # @param associatividade : int - número de linhas em cada conjunto, deve ser potência de 2.
     #
-    # @param tamLinha : int - número de bytes por linha por conjunto, deve ser potência de 2.
+    # @param tamLinha : int - número de bytes por linha de cada conjunto, deve ser potência de 2.
     #
     def __init__(self, capacidade, associatividade, tamLinha):
         self.__verificaArgumentos(capacidade, associatividade, tamLinha)
@@ -24,8 +23,6 @@ class SACache:
         self.__numColunas = tamLinha // 4
         self.__tamOffset = log2(self.__numColunas)
         self.__tamLookup = log2(self.__numConjuntos)
-
-        self.__verifica32Bits()
 
         c = self.__capacidade // self.__numConjuntos
         l = self.__tamLinha
@@ -66,15 +63,26 @@ class SACache:
         if capacidade % (tamLinha * associatividade) != 0:
             raise ValueError('Capacidade inválida, deve ser múltiplo de (assoc)x(tamLinha).')
 
-    # Lança exceção se lookup e offset estourarem 32 bits.
+    # Obtém a quantidade de bits de lookup.
     #
-    # @raise ValueError.
+    # @return int.
     #
-    # @return None.
+    def getTamLookup(self):
+        return self.__tamLookup
+
+    # Obtém a quantidade de bits de offset.
     #
-    def __verifica32Bits(self):
-        if self.__tamLookup + self.__tamOffset > 32:
-            raise ValueError('Tamanho do lookup + offset ultrapassam 32 bits.')
+    # @return int.
+    #
+    def getTamOffset(self):
+        return self.__tamOffset
+
+    # Obtém a quantidade de bits de tag.
+    #
+    # @return int.
+    #
+    def getTamTag(self):
+        return 32 - self.__tamOffset - self.__tamLookup
 
     # Obtém a capacidade.
     #
