@@ -22,12 +22,31 @@ def isPotenciaDois(x):
     return True
 
 
-class INT:
-    # Cria um inteiro por referência.
+# Cacula logaritimo inteiro na base 2.
+#
+# @param x : int - número de referência do cálculo.
+#
+# @return int.
+#
+def log2(x):
+    import math
+    return int(math.log(x, 2))
+
+
+class Word:
+    # Cria uma palavra de 32 bits (4 bytes).
     #
-    # @param valor  int - valor propriamente dito.
+    # @param valor : int - valor da palavra (usando inteiro).
+    #
+    # @raise TypeError, ValueError.
     #
     def __init__(self, valor):
+        if type(valor) != int:
+            raise TypeError('Valor da word deve ser int.')
+
+        if valor.bit_length() > 32:
+            raise ValueError('Tamanho da word deve ser no máx. 32 bits.')
+
         self.__valor = valor
     
     # Método set, para mudar o valor da variável.
@@ -45,4 +64,11 @@ class INT:
     #
     def get(self):
         return self.__valor
+
+    # Representação em hexadecimal.
+    #
+    # @return str.
+    #
+    def __repr__(self):
+        return hex(self.__valor)
 

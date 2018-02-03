@@ -1,6 +1,5 @@
-import math
-
 from src.util import isPotenciaDois
+from src.util import log2
 from src.TACache import TACache
 
 
@@ -22,8 +21,11 @@ class SACache:
         self.__numLinhasConjunto = associatividade
         self.__tamLinha = tamLinha
         self.__numConjuntos = capacidade // (associatividade * tamLinha)
-        self.__tamOffset = int(math.log(tamLinha, 2))
-        self.__tamLookup = int(math.log(self.__numConjuntos, 2))
+        self.__numColunas = tamLinha // 4
+        self.__tamOffset = log2(self.__numColunas)
+        self.__tamLookup = log2(self.__numConjuntos)
+
+        self.__verifica32Bits()
 
         c = self.__capacidade // self.__numConjuntos
         l = self.__tamLinha
@@ -56,10 +58,23 @@ class SACache:
             raise ValueError('Associatividade inválida, deve ser potência de 2.')
 
         if not isPotenciaDois(tamLinha):
-            raise ValueError('Tamanho de Linha inválido, deve ser potência de 2.')
+            raise ValueError('Tamanho de linha inválido, deve ser potência de 2.')
+
+        if tamLinha % 4 != 0:
+            raise ValueError('Tamanho de Linha inválido, deve ser múltiplo de 4.')
 
         if capacidade % (tamLinha * associatividade) != 0:
             raise ValueError('Capacidade inválida, deve ser múltiplo de (assoc)x(tamLinha).')
+
+    # Lança exceção se lookup e offset estourarem 32 bits.
+    #
+    # @raise ValueError.
+    #
+    # @return None.
+    #
+    def __verifica32Bits(self):
+        if self.__tamLookup + self.__tamOffset > 32:
+            raise ValueError('Tamanho do lookup + offset ultrapassam 32 bits.')
 
     # Obtém a capacidade.
     #
@@ -108,6 +123,20 @@ class SACache:
             out += '\n#{}:\n{}'.format(i, self.__conjuntos[i])
         return out
 
+    # Operador <.
+    #
+    # @param other : SACache - instância de comparação.
+    #
+    # @raise TypeError.
+    #
+    # @return bool.
+    #
+    def __lt__(self, other):
+        if type(other) != SACache:
+            raise TypeError('Objetos devem ser SACache para comparar.')
+        else:
+            return self.__tamLinha < other.__tamLinha
+
     # Obtém o dado salvo do endereço.
     #
     # @param address : int - endereço de 32 bits (4 bytes).
@@ -145,89 +174,48 @@ class SACache:
         tac = self.__conjuntos[lookup]
         return tac.setDado(address, valor)
 
+    # Cria nova SAC com as mesmas características, mas vazia.
+    #
+    # @param sac : SACache - cache de referência.
+    #
+    # return SACache.
+    #
+    def duplicate(self):
+        c = self.getCapacidade()
+        a = self.getNumLinhas()
+        l = self.getTamLinha()
+        return SACache(c, a, l)
+
 
 ### FUNÇÕES DE INTERFACE (requisitos do Dr. Saúde):
 
 
-# Cria nova cache associativa por conjutos.
-#
-# @param c : int - capacidade.
-# @param a : int - associatividade.
-# @param l : int - tamanho da linha.
-#
-# @return SACache.
-#
 def createSACache(c, a, l):
     return SACache(c, a, l)
 
 
-# Obtém o valor da capacidade da cache.
-#
-# @param sac : SACache - referência para cache.
-#
-# @return int.
-#
 def getSACacheCapacity(sac):
     return sac.getCapacidade()
 
 
-# Obtém o valor do tamanho da linha da cache.
-#
-# @param tac : SACache - referência para cache.
-#
-# @return int.
-#
 def getSACacheLineSize(sac):
     return sac.getTamLinha()
 
 
-# Tenta obter um valor na cache pelo endereço passado.
-#
-# @param sac : SACache - referência para cache.
-# @param address : int - endereço de origem.
-# @param value : INT - inteiro por passagem por valor.
-#
-# return bool.
-#
 def getSACacheData(sac, address, value):
     return sac.getDado(address, value)
 
 
-# Insere uma linha da memória na cache.
-#
-# @param sac : SACache - referência para cache.
-# @param address : int - endereço de origem.
-# @param line : list - valores da linha da memória.
-#
-# return None.
-#
 def setSACacheLine(sac, address, line):
     sac.setLine(address, line)
 
 
-# Insere um dado lido da memória na cache.
-#
-# @param tac : SACache - referência para cache.
-# @param address : int - endereço de origem do dado.
-# @param value : int - valor propriamente dito.
-#
-# return bool.
-#
 def setSACacheData(sac, address, value):
     return sac.setDado(address, value)
 
 
-# Cria nova SAC com as mesmas características, mas vazia.
-#
-# @param sac : SACache - cache de referência.
-#
-# return SACache.
-#
 def duplicateSACache(sac):
-    c = sac.getCapacidade()
-    a = sac.getNumLinhas()
-    l = sac.getTamLinha()
-    return SACache(c, a, l)
+    return sac.duplicate()
 
 
 

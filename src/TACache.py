@@ -1,6 +1,5 @@
-import math
-
 from src.util import isPotenciaDois
+from src.util import log2
 from src.util import CACHE_HIT
 from src.util import CACHE_MISS
 
@@ -19,12 +18,13 @@ class TACache:
         self.__capacidade = capacidade
         self.__tamLinha = tamLinha
         self.__numLinhas = capacidade // tamLinha
-        self.__tamOffset = int(math.log(tamLinha, 2))
+        self.__numColunas = tamLinha // 4
+        self.__tamOffset = log2(self.__numColunas)
 
         self.__tags = [None] * self.__numLinhas
 
         # cada célula tem 4 bytes (32 bits)
-        self.__matriz = [[None] * self.__tamLinha for i in range(self.__numLinhas)]
+        self.__matriz = [[None] * self.__numColunas for i in range(self.__numLinhas)]
 
         self.__posInserirFila = 0
 
@@ -48,10 +48,13 @@ class TACache:
             raise ValueError('Capacidade inválida, deve ser potência de 2.')
 
         if not isPotenciaDois(tamLinha):
-            raise ValueError('Tamanho da Linha inválido, deve ser potência de 2.')
+            raise ValueError('Tamanho de linha inválido, deve ser potência de 2.')
+
+        if tamLinha % 4 != 0:
+            raise ValueError('Tamanho de linha inválido, deve ser múltiplo de 4.')
 
         if capacidade % tamLinha != 0:
-            raise ValueError('Capacidade inválida, deve ser múltiplo de bytesLinha.')
+            raise ValueError('Capacidade inválida, deve ser múltiplo de tamLinha.')
 
     # Obtém a posição correta para se inserir uma nova tag na lista (fila circular)
     #
@@ -90,7 +93,7 @@ class TACache:
     # @return int.
     #
     def getBitsOffset(self, address):
-        return address & (self.__tamLinha - 1)
+        return address & (self.__numColunas - 1)
 
     # Obtém os bits de tag de um dado endereço. 
     #
@@ -140,6 +143,7 @@ class TACache:
     def setLine(self, address, linha):
         tag = self.getBitsTag(address)
         pos = self.buscaTag(tag)
+        linha = [linha[i] for i in range(self.__numColunas)]
 
         if pos != -1:
             self.__matriz[pos] = linha
@@ -183,68 +187,25 @@ class TACache:
 ### FUNÇÕES DE INTERFACE (requisitos do Dr. Saúde):
 
 
-# Cria nova cache totalmente associativa.
-# 
-# @param c : int - capacidade.
-# @param l : int - tamanho da linha.
-# 
-# @return TACache.
-#
 def createTACache(c, l):
     return TACache(c, l)
 
 
-# Obtém o valor da capacidade da cache.
-# 
-# @param tac : TACache - referência para cache.
-#
-# @return int.
-#
 def getTACacheCapacity(tac):
     return tac.getCapacidade()
 
 
-# Obtém o valor do tamanho da linha da cache.
-# 
-# @param tac : TACache - referência para cache.
-#
-# @return int.
-#
 def getTACacheLineSize(tac):
     return tac.getTamLinha()
 
 
-# Tenta obter um valor na cache pelo endereço passado.
-# 
-# @param tac : TACache - referência para cache.
-# @param address : int - endereço de origem.
-# @param value : INT - inteiro por passagem por valor.
-#
-# @return bool.
-#
 def getTACacheData(tac, address, value):
     return tac.getDado(address, value)
 
 
-# Insere uma linha da memória na cache.
-#
-# @param tac : TACache - referência para cache.
-# @param address : int - endereço de origem.
-# @param line : list - valores da linha da memória.
-#
-# return None.
-#
 def setTACacheLine(tac, address, line):
     tac.setLine(address, line)
 
 
-# Insere um dado lido da memória na cache.
-#
-# @param tac : TACache - referência para cache.
-# @param address : int - endereço de origem do dado.
-# @param value : int - valor propriamente dito.
-#
-# return bool.
-#
 def setTACacheData(tac, address, value):
     return tac.setDado(address, value)

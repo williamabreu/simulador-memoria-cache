@@ -7,6 +7,7 @@
 > functions
 
 - __OK__ isPotenciaDois
+- __OK__ log2
  
 > class INT
 
@@ -57,9 +58,11 @@
 - __OK__ getNumConjuntos
 - __OK__ getBitsLookup
 - __OK__ repr
+- __OK__ lt
 - __OK__ getDado
 - __OK__ setLine
 - __OK__ setDado
+- __OK__ duplicate
 
 
 > functions 
@@ -71,5 +74,31 @@
 - __OK__ setSACacheLine
 - __OK__ setSACacheData
 - __OK__ duplicateSACache
+
+
+
+## Cache.py
+
+> class Cache
+
+- __OK__ init
+- __OK__ veririficaArgumentos
+- __OK__ duplicate
+- __OK__ repr
+
+> functions
+
+- __OK__ createCache
+- fetchCacheData
+- fetchCacheInstruction
+- getCacheData
+- getCacheInstruction
+- setCacheData
+- setCacheInstruction
+- __OK__ duplicateCache
+
+
+
+
 
 
