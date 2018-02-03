@@ -13,6 +13,8 @@ class SACache:
     #
     # @param tamLinha : int - número de bytes por linha de cada conjunto, deve ser potência de 2.
     #
+    # @raise ValueError, TypeError.
+    #
     def __init__(self, capacidade, associatividade, tamLinha):
         self.__verificaArgumentos(capacidade, associatividade, tamLinha)
 
@@ -21,7 +23,7 @@ class SACache:
         self.__tamLinha = tamLinha
         self.__numConjuntos = capacidade // (associatividade * tamLinha)
         self.__numColunas = tamLinha // 4
-        self.__tamOffset = log2(self.__numColunas)
+        self.__tamOffset = log2(self.__tamLinha)
         self.__tamLookup = log2(self.__numConjuntos)
 
         c = self.__capacidade // self.__numConjuntos
@@ -34,19 +36,19 @@ class SACache:
     # @param associatividade : int - mesmo do construtor.
     # @param tamLinha : int - mesmo do construtor.
     #
-    # @raise ValueError.
+    # @raise ValueError, TypeError.
     #
     # @return None.
     #
     def __verificaArgumentos(self, capacidade, associatividade, tamLinha):
         if type(capacidade) != int:
-            raise ValueError('Capacidade inválida, deve ser inteiro.')
+            raise TypeError('Capacidade inválida, deve ser inteiro.')
 
         if type(associatividade) != int:
-            raise ValueError('Associatividade inválida, deve ser inteiro.')
+            raise TypeError('Associatividade inválida, deve ser inteiro.')
 
         if type(tamLinha) != int:
-            raise ValueError('Tamanho de Linha inválido, deve ser inteiro.')
+            raise TypeError('Tamanho de Linha inválido, deve ser inteiro.')
 
         if not isPotenciaDois(capacidade):
             raise ValueError('Capacidade inválida, deve ser potência de 2.')
@@ -116,9 +118,12 @@ class SACache:
     #
     # @param address : int - endereço de 32 bits (4 bytes).
     #
+    # @raise TypeError, ValueError.
+    #
     # @return int.
     #
     def getBitsLookup(self, address):
+        self.__verificaAddress(address)
         return (address >> self.__tamOffset) & (2 ** self.__tamLookup - 1)
 
     # Representação em string.
@@ -148,14 +153,17 @@ class SACache:
     # Obtém o dado salvo do endereço.
     #
     # @param address : int - endereço de 32 bits (4 bytes).
-    # @param valor : INT - inteiro para passagem por valor.
+    # @param word : Word - palavra de 32 bits (4 bytes).
+    #
+    # @raise TypeError, ValueError, IndexError.
     #
     # @return bool.
     #
-    def getDado(self, address, valor):
+    def getDado(self, address, word):
+        self.__verificaAddress(address)
         lookup = self.getBitsLookup(address)
         tac = self.__conjuntos[lookup]
-        return tac.getDado(address, valor)
+        return tac.getDado(address, word)
 
 
     # Insere uma linha da memória na cache.
@@ -163,9 +171,12 @@ class SACache:
     # @param address : int - endereço de origem.
     # @param linha : list - valores da linha da memória.
     #
+    # @raise TypeError, IndexError, ValueError.
+    #
     # return None.
     #
     def setLine(self, address, linha):
+        self.__verificaAddress(address)
         lookup = self.getBitsLookup(address)
         tac = self.__conjuntos[lookup]
         tac.setLine(address, linha)
@@ -173,11 +184,14 @@ class SACache:
     # Insere um dado lido da memória na cache.
     #
     # @param address : int - endereço de origem do dado.
-    # @param valor : int - valor propriamente dito
+    # @param valor : Word - palavra de 32 bits (4 bytes).
+    #
+    # @raise TypeError, ValueError.
     #
     # return bool.
     #
     def setDado(self, address, valor):
+        self.__verificaAddress(address)
         lookup = self.getBitsLookup(address)
         tac = self.__conjuntos[lookup]
         return tac.setDado(address, valor)
@@ -193,6 +207,20 @@ class SACache:
         a = self.getNumLinhas()
         l = self.getTamLinha()
         return SACache(c, a, l)
+
+    # Verifica corretude do endereço.
+    #
+    # @param address : int - endereço de 32 bits.
+    #
+    # @raise TypeError, ValueError.
+    #
+    # @return None.
+    #
+    def __verificaAddress(self, address):
+        if type(address) != int:
+            raise TypeError('Endereço deve ser int.')
+        if address.bit_length() > 32 or address < 0:
+            raise ValueError('Endereço inválido.')
 
 
 ### FUNÇÕES DE INTERFACE (requisitos do Dr. Saúde):

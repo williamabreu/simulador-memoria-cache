@@ -113,20 +113,6 @@ class TACache:
         self.__verificaAddress(address)
         return address >> self.__tamOffset
 
-    # Verifica corretude do endereço.
-    #
-    # @param address : int - endereço de 32 bits.
-    #
-    # @raise TypeError, ValueError.
-    #
-    # @return None.
-    #
-    def __verificaAddress(self, address):
-        if type(address) != int:
-            raise TypeError('Endereço deve ser int.')
-        if address.bit_length() > 32 or address < 0:
-            raise ValueError('Endereço inválido.')
-
     # Representação em string.
     #
     # @return str.
@@ -142,7 +128,7 @@ class TACache:
     # @param address : int - endereço de 32 bits (4 bytes).
     # @param word : Word - inteiro de 32 bits passado por valor.
     #
-    # @raise TypeError, ValueError.
+    # @raise TypeError, ValueError, IndexError.
     #
     # @return bool.
     #
@@ -152,6 +138,10 @@ class TACache:
 
         tag = self.getBitsTag(address)
         offset = self.getBitsOffset(address)
+
+        if offset % 4 != 0:
+            raise IndexError('Offset deve ser múltiplo de 4.')
+
         pos = self.buscaTag(tag)
 
         if pos != -1:
@@ -205,6 +195,10 @@ class TACache:
             return CACHE_MISS
         else:
             offset = self.getBitsOffset(address)
+
+            if offset % 4 != 0:
+                raise IndexError('Offset deve ser múltiplo de 4.')
+
             self.__matriz[linha][offset] = word.copy()
             return CACHE_HIT
 
@@ -220,6 +214,20 @@ class TACache:
             if tag == self.__tags[i]:
                 return i
         return -1
+
+    # Verifica corretude do endereço.
+    #
+    # @param address : int - endereço de 32 bits.
+    #
+    # @raise TypeError, ValueError.
+    #
+    # @return None.
+    #
+    def __verificaAddress(self, address):
+        if type(address) != int:
+            raise TypeError('Endereço deve ser int.')
+        if address.bit_length() > 32 or address < 0:
+            raise ValueError('Endereço inválido.')
 
     # Verifica corretude da palavra de 32 bits.
     #
