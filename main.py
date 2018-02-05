@@ -1,25 +1,34 @@
-from src.SACache import SACache
+from src.interpreter import Interpreter
+from src.interpreter import CompilationError
+from sys import argv
+from sys import stderr
+from traceback import print_exc
 
-#criar estrutura
-#cria l1d a=8, l=64, c=32KB, n=64 (lookup 6, offset 6, tag 20)
-x = cl1d = SACache(32768, 8, 64)
-print('meu', x.getTamLookup(), x.getTamOffset(), x.getTamTag())
-print('ok-',6,6,20,'\n')
 
-#cria l1i a=4, l=64, c=32KB, n=128 (lookup 7, offset 6, tag 19)
-x = cl1i = SACache(32768, 4, 64)
-print('meu', x.getTamLookup(), x.getTamOffset(), x.getTamTag())
-print('ok-',7,6,19,'\n')
+def main(filePath):
+    arquivoComandos = open(filePath)
 
-#cria l2 a=8, l=64, c=256KB, n=512 (lookup 9, offset 6, tag 17)
-x = cl2 = SACache(262144, 8, 64)
-print('meu', x.getTamLookup(), x.getTamOffset(), x.getTamTag())
-print('ok-',9,6,17,'\n')
+    simulador = Interpreter(arquivoComandos)
+    relatorio = simulador.getRelatorio().gerarRelatorio()
 
-#cria l3 a=16, l=128, c=8MB, n=4096 (lookup 12, offset 7, tag 13)
-x = cl3 = SACache(8388608, 16, 128)
-print('meu', x.getTamLookup(), x.getTamOffset(), x.getTamTag())
-print('ok-',12,7,13,'\n')
+    print(relatorio)
 
-print()
+    arquivoComandos.close()
 
+
+
+
+if __name__ == '__main__':
+    if len(argv) != 2:
+        stderr.writelines('Parâmetro incorreto.\nUso:\n  python3 main.py <arquivo>\n')
+        exit(1)
+
+    try:
+        main(argv[1])
+    except CompilationError as e:
+        stderr.writelines(e.getMessage())
+        stderr.writelines('\n')
+        exit(1)
+    except:
+        print_exc()
+        exit(1)

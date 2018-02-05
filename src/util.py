@@ -1,8 +1,3 @@
-# Constantes:
-CACHE_MISS = False
-CACHE_HIT = True
-
-
 # Verifica se x é potência de 2.
 # 
 # @param x : int - número a ser verificado. 

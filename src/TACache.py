@@ -1,8 +1,7 @@
 from src.util import isPotenciaDois
 from src.util import log2
-from src.util import CACHE_HIT
-from src.util import CACHE_MISS
 from src.util import Word
+from src.constantes import *
 
 
 class TACache:

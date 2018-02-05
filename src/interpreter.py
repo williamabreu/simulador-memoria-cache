@@ -1,22 +1,38 @@
-from sys import stderr
-
 from src.SACache import SACache
+from src.Cache import Cache
+from src.MainMemory import MainMemory
+from src.Memory import Memory
+from src.Processor import Processor
 from src.Relatorio import Relatorio
 
 
 
 class CompilationError(BaseException):
-    def __init__(self, name, line, msg):
-        self.__name = name
-        self.__line = line
-        self.__msg = msg
+    def __init__(self, objeto, linha, arquivo):
+        tipo = str(type(objeto))
+        start = tipo.index("'")
+        end = tipo.index("'", start+1)
+        tipo = tipo[start+1:end]
+
+        self.__tipo = tipo
+        self.__linha = linha
+        self.__arquivo = arquivo
+        self.__detalhes = str(objeto)
 
     def getMessage(self):
         msg =  'Erro durante a compilação:\n'
-        msg += '  Linha:    {}\n'.format(self.__line)
-        msg += '  Tipo:     {}\n'.format(self.__name)
-        msg += '  Detalhes: {}\n'.format(self.__msg)
+        msg += '  Arquivo de comandos "{}", linha {}\n'.format(self.__arquivo.name, self.__linha)
+        msg += '    {}'.format(self.__getFileLine())
+        msg += '    ^\n'
+        msg += '{}: {}'.format(self.__tipo, self.__detalhes)
         return msg
+
+    def __getFileLine(self):
+        self.__arquivo.seek(0)
+        for i in range(self.__linha):
+            linha = self.__arquivo.readline()
+        return linha
+
 
 
 
@@ -85,40 +101,33 @@ class Interpreter:
         self.__MEM = None
         self.__PROC = None
 
-        self.__relatorio = Relatorio()
+        self.__relatorio = None
         self.__comandos = self.__compilarArquivo(arquivo)
 
-        try:
-            self.__crirarHierarquia()
-        except BaseException as e:
-            stderr.writelines(e.args[0] + '\n')
-            exit(1)
+        self.__crirarHierarquia()
+        self.__executarComandos()
 
-        try:
-            self.__executarComandos()
-        except BaseException as e:
-            stderr.writelines(e.args[0] + '\n')
-
+    def getRelatorio(self):
+        return self.__relatorio
 
     def __compilarArquivo(self, arquivo):
         lines = []
         for num, line in enumerate(arquivo):
-            if line[0] == '#':
-                # Comentário, ignora e busca próxima linha.
+            lista = line.split()
+            if lista == [] or line[0] == '#':
+                # Vazio ou Comentário, ignora e busca próxima linha.
                 continue
             else:
                 try:
                     # Verifica o comando, senão lança erro de compilação.
-                    cmd = self.__extrairComando(line)
+                    cmd = self.__extrairComando(lista)
                     lines.append(cmd)
                 except BaseException as e:
-                    erro = CompilationError(type(e), num+1, e)
-                    stderr.writelines(erro.getMessage())
-                    exit(1)
+                    erro = CompilationError(e, num+1, arquivo)
+                    raise erro
         return lines
 
-    def __extrairComando(self, string):
-        lista = string.split()
+    def __extrairComando(self, lista):
         cmd = lista.pop(0)
         args = lista
 
@@ -144,7 +153,7 @@ class Interpreter:
                 c, a, l = args
                 aux = self.__L1D = SACache(c, a, l)
 
-                print('Criado cache L1d (lookup {}, offset {}, tag {})'.format(
+                print('Criado cache L1d (lookup {}, offset {}, tag {}).'.format(
                     aux.getTamLookup(), aux.getTamOffset(), aux.getTamTag()
                     )
                 )
@@ -153,7 +162,7 @@ class Interpreter:
                 c, a, l = args
                 aux = self.__L1I = SACache(c, a, l)
 
-                print('Criado cache L1i (lookup {}, offset {}, tag {})'.format(
+                print('Criado cache L1i (lookup {}, offset {}, tag {}).'.format(
                     aux.getTamLookup(), aux.getTamOffset(), aux.getTamTag()
                     )
                 )
@@ -162,7 +171,7 @@ class Interpreter:
                 c, a, l = args
                 aux = self.__L2 = SACache(c, a, l)
 
-                print('Criado cache L2 (lookup {}, offset {}, tag {})'.format(
+                print('Criado cache L2 (lookup {}, offset {}, tag {}).'.format(
                     aux.getTamLookup(), aux.getTamOffset(), aux.getTamTag()
                     )
                 )
@@ -171,30 +180,33 @@ class Interpreter:
                 c, a, l = args
                 aux = self.__L3 = SACache(c, a, l)
 
-                print('Criado cache L3 (lookup {}, offset {}, tag {})'.format(
+                print('Criado cache L3 (lookup {}, offset {}, tag {}).'.format(
                     aux.getTamLookup(), aux.getTamOffset(), aux.getTamTag()
                     )
                 )
 
             elif i == 4:
-                '''
                 ramsize, vmsize = args
-                self.__MP = None # cria memoria princ.
-                '''
-                print('criar hierarquia passo 5')
+                aux = self.__MP = MainMemory(ramsize, vmsize)
+
+                print('Criada memória principal (capacidade {} bytes, endereços [0, {}]).'.format(
+                    aux.getTamTotal(), aux.getTamTotal() - 1
+                    )
+                )
 
             elif i == 5:
-                '''
-                self.__MEM = None # cria hierarquia
-                '''
-                print('criar hierarquia passo 6')
+                cache = Cache(self.__L1D, self.__L1I, self.__L2, self.__L3)
+                memprinc = self.__MP
+                self.__relatorio = Relatorio(cache, memprinc)
+                self.__MEM = Memory(cache, memprinc)
+
+                print('Criada hierarquia de memória.')
 
             elif i == 6:
-                '''
-                n = args
-                self.__PROC = None # cria processador
-                '''
-                print('criar hierarquia passo 7')
+                n = tuple(args)[0]
+                aux = self.__PROC = Processor(self.__MEM, n)
+
+                print('Criada CPU com {} núcleos.'.format(aux.getNumCores()))
 
             else:
                 raise RuntimeError('Isso não deveria ter acontecido!')
@@ -214,25 +226,49 @@ class Interpreter:
             raise RuntimeError('Comando inválido.')
 
         elif cmd == 'ri':
-            print(cmd)
+            n, addr = args
+            self.ri(n, addr)
 
         elif cmd == 'wi':
-            print(cmd)
+            n, addr, value = args
+            self.wi(n, addr, value)
 
         elif cmd == 'rd':
-            print(cmd)
+            n, addr = args
+            self.rd(n, addr)
 
         elif cmd == 'wd':
-            print(cmd)
+            n, addr, value = args
+            self.wd(n, addr, value)
 
         elif cmd == 'asserti':
-            print(cmd)
+            n, addr, level, value = args
+            self.asserti(n, addr, level, value)
 
         elif cmd == 'assertd':
-            print(cmd)
+            n, addr, level, value = args
+            self.assertd(n, addr, level, value)
 
         else:
             raise RuntimeError('Isso não deveria ter acontecido!')
+
+    def ri(self, n, addr):
+        print('ri')
+
+    def wi(self, n, addr, value):
+        print('wi')
+
+    def rd(self, n, addr):
+        print('rd')
+
+    def wd(self, n, addr, value):
+        print('wd')
+
+    def asserti(self, n, addr, level, value):
+        raise NotImplementedError('Interpretador não sabe executar asserti.')
+
+    def assertd(self, n, addr, level, value):
+        raise NotImplementedError('Interpretador não sabe executar assertd.')
 
 
 

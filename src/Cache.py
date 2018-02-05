@@ -63,6 +63,30 @@ class Cache:
         if sorted([l1i, l2, l3]) != [l1i, l2, l3]:
             raise ValueError('Tamanhos de linha inválidos, devem ser crescentes.')
 
+    # Get instance.
+    # @return SACache.
+    #
+    def getL3(self):
+        return self.__l3
+
+    # Get instance.
+    # @return SACache.
+    #
+    def getL2(self):
+        return self.__l2
+
+    # Get instance.
+    # @return SACache.
+    #
+    def getL1i(self):
+        return self.__l1i
+
+    # Get instance.
+    # @return SACache.
+    #
+    def getL1d(self):
+        return self.__l1d
+
     # Cria uma nova Cache com a mesma estrutura, mas vazia.
     #
     # @raise ModuleNotFoundError.
