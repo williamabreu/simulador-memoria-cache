@@ -48,6 +48,8 @@ class Memory:
     def setDado(self, address, data):
         #self.__cache.setCacheData(address, data)
         self.__mem.setDado(address, data)
+        from src.util import Word
+        self.__cache.getCacheData(self.__mem, address, Word())
 
     # Insere uma instrução na memória, obedecendo a hierarquia.
     # @param adddress : int - endereço de 32 bits.
@@ -57,6 +59,8 @@ class Memory:
     def setInstrucao(self, address, instruction):
         #self.__cache.setCacheInstruction(address, instruction)
         self.setDado(address, instruction)
+        from src.util import Word
+        self.__cache.getCacheInst(self.__mem, address, Word())
 
     # Duplica.
     # @return Memory.

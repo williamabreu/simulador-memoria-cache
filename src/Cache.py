@@ -154,6 +154,7 @@ class Cache:
         address = self.firstAddressLine(address)
         linhaL3 = mainMem.getMemoryLine(address, tamLinhaL3)
         self.__l1i.setLine(address, linhaL3[:self.__l1i.getTamLinha()])
+        print(self.__l1i)
         self.__l2.setLine(address, linhaL3[:self.__l2.getTamLinha()])
         self.__l3.setLine(address, linhaL3)
 
@@ -169,17 +170,20 @@ class Cache:
     # @return int.
     #
     def getCacheData(self, mainMem, address, data):
-        if self.getL1d().getDado(address, data) == CACHE_HIT:
-            return FOUND_IN_L1
-        elif self.getL2().getDado(address, data) == CACHE_HIT:
-            self.setLineCacheData(mainMem, address)
-            return FOUND_IN_L2
-        elif self.getL3().getDado(address, data) == CACHE_HIT:
-            self.setLineCacheData(mainMem, address)
-            return FOUND_IN_L3
-        else:
-            self.setLineCacheData(mainMem, address)
-            return mainMem.getDado(address, data) # FOUND_IN_MEM
+        try:
+            if self.getL1d().getDado(address, data) == CACHE_HIT:
+                return FOUND_IN_L1
+            elif self.getL2().getDado(address, data) == CACHE_HIT:
+                self.setLineCacheData(mainMem, address)
+                return FOUND_IN_L2
+            elif self.getL3().getDado(address, data) == CACHE_HIT:
+                self.setLineCacheData(mainMem, address)
+                return FOUND_IN_L3
+            else:
+                self.setLineCacheData(mainMem, address)
+                return mainMem.getDado(address, data) # FOUND_IN_MEM
+        except:
+            return ADDRESS_OUT_OF_RANGE
 
     # Busca uma instrução na cache pelo endereço, retorna o nível em que foi
     # encontrado.
@@ -193,17 +197,21 @@ class Cache:
     # @return int.
     #
     def getCacheInst(self, mainMem, address, instruction):
-        if self.getL1i().getDado(address, instruction) == CACHE_HIT:
-            return FOUND_IN_L1
-        elif self.getL2().getDado(address, instruction) == CACHE_HIT:
-            self.setLineCacheInst(mainMem, address)
-            return FOUND_IN_L2
-        elif self.getL3().getDado(address, instruction) == CACHE_HIT:
-            self.setLineCacheInst(mainMem, address)
-            return FOUND_IN_L3
-        else:
-            self.setLineCacheInst(mainMem, address)
-            return mainMem.getDado(address, instruction)
+        try:
+            if self.getL1i().getDado(address, instruction) == CACHE_HIT:
+                return FOUND_IN_L1
+            elif self.getL2().getDado(address, instruction) == CACHE_HIT:
+                self.setLineCacheInst(mainMem, address)
+                return FOUND_IN_L2
+            elif self.getL3().getDado(address, instruction) == CACHE_HIT:
+                self.setLineCacheInst(mainMem, address)
+                return FOUND_IN_L3
+            else:
+                self.setLineCacheInst(mainMem, address)
+                # print(self.getL1d())
+                return mainMem.getDado(address, instruction)
+        except:
+            return ADDRESS_OUT_OF_RANGE
 
     # Insere um dado em toda a hierarquia de cache inclusivo. Retorna
     # o nível em que o valor foi encontrado na hierarquia.
