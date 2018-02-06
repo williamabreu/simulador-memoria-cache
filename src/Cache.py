@@ -132,13 +132,30 @@ class Cache:
     # @return None.
     #
     def setLineCacheData(self, mainMem, address):
+        #####################
+        # Com problemas...
+        ####################
+        offsetl3 = self.getL3().getTamOffset()
+        offsetl2 = self.getL2().getTamOffset()
+        offsetl1 = self.getL1d().getTamOffset()
+
         tamLinhaL3 = self.getL3().getTamLinha()
-        address = self.firstAddressLine(address)
-        linhaL3 = mainMem.getMemoryLine(address, tamLinhaL3)
-        self.__l1d.setLine(address, linhaL3[:(self.__l1d.getTamLinha()//4)])
-        self.__l2.setLine(address, linhaL3[:(self.__l2.getTamLinha()//4)])
-        self.__l3.setLine(address, linhaL3)
-        print(self.__l1d)
+        tamLinhaL2 = self.getL2().getTamLinha()
+        tamLinhaL1 = self.getL1d().getTamLinha()
+
+        address3 = self.firstAddressLine(offsetl3, address)
+        address2 = self.firstAddressLine(offsetl2, address)
+        address1 = self.firstAddressLine(offsetl1, address)
+
+        linhaL3 = mainMem.getMemoryLine(address3, tamLinhaL3)
+        linhaL2 = mainMem.getMemoryLine(address2, tamLinhaL2)
+        linhaL1 = mainMem.getMemoryLine(address1, tamLinhaL1)
+
+        self.__l3.setLine(address3, linhaL3)
+        self.__l2.setLine(address2, linhaL2)
+        self.__l1d.setLine(address1, linhaL1)
+
+        # print(self.__l1d)
 
     # Linha de instruções.
     # Método para inserir em todos os níveis da cache uma linha buscada na
@@ -151,12 +168,28 @@ class Cache:
     # @return None.
     #
     def setLineCacheInst(self, mainMem, address):
+        #####################
+        # Com problemas...
+        ####################
+        offsetl3 = self.getL3().getTamOffset()
+        offsetl2 = self.getL2().getTamOffset()
+        offsetl1 = self.getL1i().getTamOffset()
+
         tamLinhaL3 = self.getL3().getTamLinha()
-        address = self.firstAddressLine(address)
-        linhaL3 = mainMem.getMemoryLine(address, tamLinhaL3)
-        self.__l1i.setLine(address, linhaL3[:(self.__l1i.getTamLinha() // 4)])
-        self.__l2.setLine(address, linhaL3[:(self.__l2.getTamLinha() // 4)])
-        self.__l3.setLine(address, linhaL3)
+        tamLinhaL2 = self.getL2().getTamLinha()
+        tamLinhaL1 = self.getL1i().getTamLinha()
+
+        address3 = self.firstAddressLine(offsetl3, address)
+        address2 = self.firstAddressLine(offsetl2, address)
+        address1 = self.firstAddressLine(offsetl1, address)
+
+        linhaL3 = mainMem.getMemoryLine(address3, tamLinhaL3)
+        linhaL2 = mainMem.getMemoryLine(address2, tamLinhaL2)
+        linhaL1 = mainMem.getMemoryLine(address1, tamLinhaL1)
+
+        self.__l3.setLine(address3, linhaL3)
+        self.__l2.setLine(address2, linhaL2)
+        self.__l1i.setLine(address1, linhaL1)
 
     # Busca um dado na cache pelo endereço, retorna o nível em que foi
     # encontrado.
@@ -170,7 +203,7 @@ class Cache:
     # @return int.
     #
     def getCacheData(self, mainMem, address, data):
-        try:
+        if 0 <= address < mainMem.getTamTotal():
             if self.getL1d().getDado(address, data) == CACHE_HIT:
                 return FOUND_IN_L1
             elif self.getL2().getDado(address, data) == CACHE_HIT:
@@ -182,7 +215,7 @@ class Cache:
             else:
                 self.setLineCacheData(mainMem, address)
                 return mainMem.getDado(address, data) # FOUND_IN_MEM
-        except:
+        else:
             return ADDRESS_OUT_OF_RANGE
 
     # Busca uma instrução na cache pelo endereço, retorna o nível em que foi
@@ -197,7 +230,7 @@ class Cache:
     # @return int.
     #
     def getCacheInst(self, mainMem, address, instruction):
-        try:
+        if 0 <= address < mainMem.getTamTotal():
             if self.getL1i().getDado(address, instruction) == CACHE_HIT:
                 return FOUND_IN_L1
             elif self.getL2().getDado(address, instruction) == CACHE_HIT:
@@ -210,7 +243,7 @@ class Cache:
                 self.setLineCacheInst(mainMem, address)
                 # print(self.getL1d())
                 return mainMem.getDado(address, instruction)
-        except:
+        else:
             return ADDRESS_OUT_OF_RANGE
 
     # Insere um dado em toda a hierarquia de cache inclusivo. Retorna
@@ -221,6 +254,9 @@ class Cache:
     #
     # @return int.
     def setCacheData(self, address, value):
+        #####################
+        # Não feito...
+        ####################
         raise NotImplementedError('Método não implementado.')
 
     # Insere uma instrução em toda a hierarquia de cache inclusivo. Retorna
@@ -231,17 +267,21 @@ class Cache:
     #
     # @return int.
     def setCacheInst(self, address, value):
+        #####################
+        # Não feito...
+        ####################
         raise NotImplementedError('Método não implementado.')
 
     # Formata o endereço para pegar a linha toda.
     # @param addr : int - endereço de 32 bits.
     # @return int.]
     #
-    def firstAddressLine(self, addr):
-        offset = self.getL3().getTamOffset()
+    def firstAddressLine(self, offset, addr):
+        # offset = self.getL3().getTamOffset()
         addr >>= offset
         addr <<= offset
         return addr
+
 
 
 ### FUNÇÕES DE INTERFACE (requisitos do Dr. Saúde):
