@@ -1,16 +1,25 @@
 from src.Cache import Cache
-from src.util import Word
 from src.MainMemory import MainMemory
 from src.constantes import *
 
 
 class Memory:
-
+    # Cosntrutor.
+    # @param cache : Cache - cache inclusivo.
+    # @param mem : MainMemory - memória principal.
+    # @raise TypeError.
+    #
     def __init__(self, cache, mem):
+        self.__apuraInput(cache, mem)
         self.__cache = cache
         self.__mem = mem
 
+    # Obtém um dado pelo endereço em algum nível na hierarquia.
+    # Retorna o nível em que foi encontrado.
+    # @param adddress : int - endereço de 32 bits.
+    # @param data : Word - palavra de retorno de 32 bits.
     # @raise TypeError.
+    # @return int.
     #
     def getDado(self, address, data):
         try:
@@ -18,7 +27,12 @@ class Memory:
         except ValueError:
             return ADDRESS_OUT_OF_RANGE
 
+    # Obtém uma instrução pelo endereço em algum nível na hierarquia.
+    # Retorna o nível em que foi encontrado.
+    # @param adddress : int - endereço de 32 bits.
+    # @param data : Word - palavra de retorno de 32 bits.
     # @raise TypeError.
+    # @return int.
     #
     def getInstrucao(self, address, instruction):
         try:
@@ -26,16 +40,27 @@ class Memory:
         except ValueError:
             return ADDRESS_OUT_OF_RANGE
 
-    # metodo de cache nao implementado
-    def setData(self, address, data):
+    # Insere um dado na memória, obedecendo a hierarquia.
+    # @param adddress : int - endereço de 32 bits.
+    # @param data : Word - palavra a inserir de 32 bits.
+    # @return None.
+    #
+    def setDado(self, address, data):
         #self.__cache.setCacheData(address, data)
         self.__mem.setDado(address, data)
 
-    def setInstruction(self, address, instruction):
+    # Insere uma instrução na memória, obedecendo a hierarquia.
+    # @param adddress : int - endereço de 32 bits.
+    # @param data : Word - palavra a inserir de 32 bits.
+    # @return None.
+    #
+    def setInstrucao(self, address, instruction):
         #self.__cache.setCacheInstruction(address, instruction)
-        self.setData(address, instruction)
+        self.setDado(address, instruction)
 
-    # ok
+    # Duplica.
+    # @return Memory.
+    #
     def duplicate(self):
         return Memory(self.__cache.duplicate(), self.__mem)
 

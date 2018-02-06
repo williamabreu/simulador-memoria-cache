@@ -18,7 +18,7 @@ class MainMemory:
         self.__ramSize = ramsize
         self.__vmSize = vmsize
         self.__totalSize = ramsize + vmsize
-        self.__dataList = [None] * (self.__totalSize // 4)
+        self.__dataList = [Word(0)] * (self.__totalSize // 4)
 
     # Lança exceção se algum dos argumentos do construtor estiver inconsistente.
     #
@@ -103,7 +103,7 @@ class MainMemory:
     def getDado(self, address, value):
         try:
             self.__verificaWord(value)
-            value.set( self.__dataList[self.getEndMem(address)] )
+            value.set( self.__dataList[self.getEndMem(address)].get() )
         except ValueError:
             return ADDRESS_OUT_OF_RANGE
 

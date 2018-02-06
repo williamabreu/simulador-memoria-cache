@@ -297,7 +297,7 @@ class Interpreter:
     # Executa comando específico.
     #
     def ri(self, n, addr):
-        pointer = Word(None)
+        pointer = Word()
         x = self.__PROC.getCore(n).getInstrucao(addr, pointer)
 
         if x == FOUND_IN_L1:
@@ -324,7 +324,7 @@ class Interpreter:
     # Executa comando específico.
     #
     def rd(self, n, addr):
-        pointer = Word(None)
+        pointer = Word()
         x = self.__PROC.getCore(n).getDado(addr, pointer)
 
         if x == FOUND_IN_L1:
@@ -346,11 +346,10 @@ class Interpreter:
     # Executa comando específico.
     #
     def wd(self, n, addr, value):
-        self.__PROC.getCore(n)
         pointer = Word(value)
-        self.__MP.setDado(addr, pointer)
+        self.__PROC.getCore(n).setDado(addr, pointer)
 
-        print('Salvo na memória.')
+        print('Salvo "{}" no endereço {} da memória.'.format(value, addr))
 
     # Executa comando específico.
     #
