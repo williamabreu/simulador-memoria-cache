@@ -1,6 +1,11 @@
 from src.constantes import *
 
 class Relatorio:
+    # Cria um novo objeto responsável por montar o relatório
+    # final do programa.
+    # @param cache : Cache - cache 3 níveis do programa.
+    # @param memprinc : MainMemory - memória do programa.
+    #
     def __init__(self, cache, memprinc):
         self.__cache = cache
         self.__memprinc = memprinc
@@ -11,21 +16,35 @@ class Relatorio:
         self.__numHits4 = 0
         self.__numErros = 0
 
+    # Método para contabilizar um hit no nível L1.
+    #
     def hit1(self):
         self.__numHits1 += 1
 
+    # Método para contabilizar um hit no nível L2.
+    #
     def hit2(self):
         self.__numHits2 += 1
 
+    # Método para contabilizar um hit no nível L3.
+    #
     def hit3(self):
         self.__numHits3 += 1
 
+    # Método para contabilizar um hit na memória principal.
+    #
     def hit4(self):
         self.__numHits4 += 1
 
+    # Método para contabilizar um erro de endereço.
+    #
     def erro(self):
         self.__numErros += 1
 
+    # Método que gera o relatório final do programa,
+    # em forma de tabela.
+    # @return str.
+    #
     def gerarRelatorio(self):
         MAX_LENGTH = 71
         TAM_CELULA = 18

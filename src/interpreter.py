@@ -8,6 +8,11 @@ from src.Relatorio import Relatorio
 
 
 class CompilationError(BaseException):
+    # Construtor da exceção de compilação do arquivo de comandos
+    # @param objeto : object - objeto de origem da erro.
+    # @param linha : int - linha do arquivo de comandos com erro.
+    # @param arquivo : open() - arquivo de comandos.
+    #
     def __init__(self, objeto, linha, arquivo):
         tipo = str(type(objeto))
         start = tipo.index("'")
@@ -19,6 +24,9 @@ class CompilationError(BaseException):
         self.__arquivo = arquivo
         self.__detalhes = str(objeto)
 
+    # Retorna a mensagem de erro formatada.
+    # @return str.
+    #
     def getMessage(self):
         msg =  'Erro durante a compilação:\n'
         msg += '  Arquivo de comandos "{}", linha {}\n'.format(self.__arquivo.name, self.__linha)
@@ -27,6 +35,10 @@ class CompilationError(BaseException):
         msg += '{}: {}'.format(self.__tipo, self.__detalhes)
         return msg
 
+    # Método para auxiliar na busca da linha que deu erro no arquivo,
+    # para exibir na mensagem e facilitar a correção do mesmo.
+    # @return str.
+    #
     def __getFileLine(self):
         self.__arquivo.seek(0)
         for i in range(self.__linha):
@@ -37,7 +49,7 @@ class CompilationError(BaseException):
 
 
 class Interpreter:
-
+    # estático.
     comandosValidos = {
         'cl1d': '<c> <a> <l>',
         # Cria uma variável L1D que é uma cache associativa por conjuntos com
@@ -92,6 +104,9 @@ class Interpreter:
         # getData) e o valor lido é igual a value.
     }
 
+    # Inicializa o interpretador.
+    # @param arquivo : open() - buffer do arquivo de comandos.
+    #
     def __init__(self, arquivo):
         self.__L1D = None
         self.__L1I = None
@@ -107,9 +122,19 @@ class Interpreter:
         self.__crirarHierarquia()
         self.__executarComandos()
 
+    # Retorna uma referência para o objeto que compõe o relatório
+    # de execução.
+    # @return Relatorio.
+    #
     def getRelatorio(self):
         return self.__relatorio
 
+    # Faz a análise sintática/léxica do arquivo de comandos
+    # e compila tudo em forma de lista para o interpretador
+    # executar.
+    # @param arquivo : open() - buffer do arquivo.
+    # @return list.
+    #
     def __compilarArquivo(self, arquivo):
         lines = []
         for num, line in enumerate(arquivo):
@@ -127,6 +152,11 @@ class Interpreter:
                     raise erro
         return lines
 
+    # Extrai o comando de uma string para um formato que o interpretador
+    # consegue executar (chave da instrução + argumentos inteiros).
+    # @param lista : list - lista de string.
+    # @return tuple.
+    #
     def __extrairComando(self, lista):
         cmd = lista.pop(0)
         args = lista
@@ -140,6 +170,10 @@ class Interpreter:
         else:
             raise KeyError('{} não é um comando válido.'.format(cmd))
 
+    # Cria a hierarquia toda executando os comandos na ordem correta.
+    # Inicializa os atributos conforme comandos do arquivo.
+    # @return None.
+    #
     def __crirarHierarquia(self):
         # 7 comandos executados em ordem.
         ordem = ('cl1d','cl1i','cl2','cl3','cmp','cmem','cp')
@@ -211,6 +245,9 @@ class Interpreter:
             else:
                 raise RuntimeError('Isso não deveria ter acontecido!')
 
+    # Executa todos os comandos de leitura/escrita do arquivo de uma vez.
+    # @return None.
+    #
     def __executarComandos(self):
         for i in range(7, len(self.__comandos)):
             cmd, args = self.__comandos[i]
@@ -219,6 +256,11 @@ class Interpreter:
             else:
                 self.executarComando(cmd, args)
 
+    # Executa um comando só, passando a instrução e a lista de argumentos.
+    # @param cmd : str - chave do comando.
+    # @param args : list - lista de parâmetros.
+    # @return None.
+    #
     def executarComando(self, cmd, args):
         relatorio = self.__relatorio
 
@@ -252,21 +294,33 @@ class Interpreter:
         else:
             raise RuntimeError('Isso não deveria ter acontecido!')
 
+    # Executa comando específico.
+    #
     def ri(self, n, addr):
         print('ri')
 
+    # Executa comando específico.
+    #
     def wi(self, n, addr, value):
         print('wi')
 
+    # Executa comando específico.
+    #
     def rd(self, n, addr):
         print('rd')
 
+    # Executa comando específico.
+    #
     def wd(self, n, addr, value):
         print('wd')
 
+    # Executa comando específico.
+    #
     def asserti(self, n, addr, level, value):
         raise NotImplementedError('Interpretador não sabe executar asserti.')
 
+    # Executa comando específico.
+    #
     def assertd(self, n, addr, level, value):
         raise NotImplementedError('Interpretador não sabe executar assertd.')
 

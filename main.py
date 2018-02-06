@@ -5,6 +5,11 @@ from sys import stderr
 from traceback import print_exc
 
 
+# Programa principal para executar tudo automaticamente só
+# com o caminho do arquivo de comandos.
+#
+# @param filePath : str - caminho do arquivo.
+#
 def main(filePath):
     arquivoComandos = None
 
@@ -23,7 +28,8 @@ def main(filePath):
 
 
 
-
+# Faz a correção dos parâmetros se o arquivo for executado direto
+# do terminal.
 if __name__ == '__main__':
     if len(argv) != 2:
         stderr.writelines('Parâmetro incorreto.\nUso:\n  python3 main.py <arquivo>\n')
