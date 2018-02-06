@@ -151,6 +151,6 @@ class MainMemory:
     def getMemoryLine(self, start, tamLinhaL3):
         # print(start//4, start//4 + tamLinhaL3)
         # print([self.__dataList[i] for i in range(start//4, start//4 + tamLinhaL3)])
-        return [self.__dataList[i//4].copy() for i in range(start, tamLinhaL3, 4)]
+        return [self.__dataList[i] for i in range(start//4, start//4 + tamLinhaL3)]
 
 

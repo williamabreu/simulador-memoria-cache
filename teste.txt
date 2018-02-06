@@ -51,7 +51,7 @@ rd 1 33554432
 #tttt tttt tttt tlll llll llll looo oooo (l3)
 #Os enderecos 0x00A00000 a 0x00A0003F sao uma linha de l1 e l2 com lookup 0
 #Vamos escrever valores incrementais nesses enderecos.
-wd 0 10485760 1
+wdi 0 10485760 1
 wd 0 10485764 2
 wd 0 10485768 3
 wd 0 10485772 4

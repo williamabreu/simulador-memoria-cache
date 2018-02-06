@@ -135,9 +135,10 @@ class Cache:
         tamLinhaL3 = self.getL3().getTamLinha()
         address = self.firstAddressLine(address)
         linhaL3 = mainMem.getMemoryLine(address, tamLinhaL3)
-        self.__l1d.setLine(address, linhaL3[:self.__l1d.getTamLinha()])
-        self.__l2.setLine(address, linhaL3[:self.__l2.getTamLinha()])
+        self.__l1d.setLine(address, linhaL3[:(self.__l1d.getTamLinha()//4)])
+        self.__l2.setLine(address, linhaL3[:(self.__l2.getTamLinha()//4)])
         self.__l3.setLine(address, linhaL3)
+        print(self.__l1d)
 
     # Linha de instruções.
     # Método para inserir em todos os níveis da cache uma linha buscada na
@@ -153,9 +154,8 @@ class Cache:
         tamLinhaL3 = self.getL3().getTamLinha()
         address = self.firstAddressLine(address)
         linhaL3 = mainMem.getMemoryLine(address, tamLinhaL3)
-        self.__l1i.setLine(address, linhaL3[:self.__l1i.getTamLinha()])
-        print(self.__l1i)
-        self.__l2.setLine(address, linhaL3[:self.__l2.getTamLinha()])
+        self.__l1i.setLine(address, linhaL3[:(self.__l1i.getTamLinha() // 4)])
+        self.__l2.setLine(address, linhaL3[:(self.__l2.getTamLinha() // 4)])
         self.__l3.setLine(address, linhaL3)
 
     # Busca um dado na cache pelo endereço, retorna o nível em que foi
