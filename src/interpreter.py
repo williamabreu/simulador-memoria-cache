@@ -294,22 +294,29 @@ class Interpreter:
         else:
             raise RuntimeError('Isso não deveria ter acontecido!')
 
+    # Contabiliza hit
+    # @param nivel : int - nível do hit/erro
+    # @return None.
+    #
+    def contabilizaHit(self, nivel):
+        if nivel == FOUND_IN_L1:
+            self.__relatorio.hit1()
+        elif nivel == FOUND_IN_L2:
+            self.__relatorio.hit2()
+        elif nivel == FOUND_IN_L3:
+            self.__relatorio.hit3()
+        elif nivel == FOUND_IN_MEM:
+            self.__relatorio.hit4()
+        else:
+            self.__relatorio.erro()
+
     # Executa comando específico.
     #
     def ri(self, n, addr):
         pointer = Word()
         x = self.__PROC.getCore(n).getInstrucao(addr, pointer)
 
-        if x == FOUND_IN_L1:
-            self.__relatorio.hit1()
-        elif x == FOUND_IN_L2:
-            self.__relatorio.hit2()
-        elif x == FOUND_IN_L3:
-            self.__relatorio.hit3()
-        elif x == FOUND_IN_MEM:
-            self.__relatorio.hit4()
-        else:
-            self.__relatorio.erro()
+        self.contabilizaHit(x)
 
         if pointer.get() != None:
             print('Obtida instrução "{}" no nivel {}'.format(pointer.get(), x))
@@ -319,7 +326,12 @@ class Interpreter:
     # Executa comando específico.
     #
     def wi(self, n, addr, value):
-        self.wd(n, addr, value)
+        pointer = Word(value)
+        x = self.__PROC.getCore(n).setInstrucao(addr, pointer)
+
+        self.contabilizaHit(x)
+
+        print('Salvo instrução "{}" no nível {}.'.format(pointer.get(), x))
 
     # Executa comando específico.
     #
@@ -327,16 +339,7 @@ class Interpreter:
         pointer = Word()
         x = self.__PROC.getCore(n).getDado(addr, pointer)
 
-        if x == FOUND_IN_L1:
-            self.__relatorio.hit1()
-        elif x == FOUND_IN_L2:
-            self.__relatorio.hit2()
-        elif x == FOUND_IN_L3:
-            self.__relatorio.hit3()
-        elif x == FOUND_IN_MEM:
-            self.__relatorio.hit4()
-        else:
-            self.__relatorio.erro()
+        self.contabilizaHit(x)
 
         if pointer.get() != None:
             print('Obtido dado "{}" no nivel {}'.format(pointer.get(), x))
@@ -347,9 +350,11 @@ class Interpreter:
     #
     def wd(self, n, addr, value):
         pointer = Word(value)
-        self.__PROC.getCore(n).setDado(addr, pointer)
+        x = self.__PROC.getCore(n).setDado(addr, pointer)
 
-        print('Salvo "{}" no endereço {} da memória.'.format(value, addr))
+        self.contabilizaHit(x)
+
+        print('Salvo dado "{}" no nível {}.'.format(pointer.get(), x))
 
     # Executa comando específico.
     #
@@ -357,7 +362,9 @@ class Interpreter:
         pointer = Word()
         x = self.__PROC.getCore(n).getInstrucao(addr, pointer)
 
-        if x == level and pointer.get() == value.get():
+        self.contabilizaHit(x)
+
+        if x == level and pointer.get() == value:
             print('OK.')
         else:
             print('ERRADO.')
@@ -368,7 +375,7 @@ class Interpreter:
         pointer = Word()
         x = self.__PROC.getCore(n).getDado(addr, pointer)
 
-        if x == level and pointer.get() == value.get():
+        if x == level and pointer.get() == value:
             print('OK.')
         else:
             print('ERRADO.')

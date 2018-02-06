@@ -22,9 +22,9 @@ class Memory:
     # @return int.
     #
     def getDado(self, address, data):
-        try:
+        if 0 <= address < self.__mem.getTamTotal():
             return self.__cache.getCacheData(self.__mem, address, data)
-        except ValueError:
+        else:
             return ADDRESS_OUT_OF_RANGE
 
     # Obtém uma instrução pelo endereço em algum nível na hierarquia.
@@ -35,9 +35,9 @@ class Memory:
     # @return int.
     #
     def getInstrucao(self, address, instruction):
-        try:
+        if 0 <= address < self.__mem.getTamTotal():
             return self.__cache.getCacheInst(self.__mem, address, instruction)
-        except ValueError:
+        else:
             return ADDRESS_OUT_OF_RANGE
 
     # Insere um dado na memória, obedecendo a hierarquia.
@@ -46,10 +46,13 @@ class Memory:
     # @return None.
     #
     def setDado(self, address, data):
-        #self.__cache.setCacheData(address, data)
-        self.__mem.setDado(address, data)
-        from src.util import Word
-        self.__cache.getCacheData(self.__mem, address, Word())
+        if 0 <= address < self.__mem.getTamTotal():
+            nivel = self.__cache.setCacheData(address, data)
+            self.__mem.setDado(address, data)
+            self.__cache.setLineCacheData(self.__mem, address)
+            return nivel
+        else:
+            return ADDRESS_OUT_OF_RANGE
 
     # Insere uma instrução na memória, obedecendo a hierarquia.
     # @param adddress : int - endereço de 32 bits.
@@ -57,10 +60,13 @@ class Memory:
     # @return None.
     #
     def setInstrucao(self, address, instruction):
-        #self.__cache.setCacheInstruction(address, instruction)
-        self.setDado(address, instruction)
-        from src.util import Word
-        self.__cache.getCacheInst(self.__mem, address, Word())
+        if 0 <= address <self.__mem.getTamTotal():
+            nivel = self.__cache.setCacheInst(address, instruction)
+            self.__mem.setDado(address, instruction)
+            self.__cache.setLineCacheInst(self.__mem, address)
+            return nivel
+        else:
+            return ADDRESS_OUT_OF_RANGE
 
     # Duplica.
     # @return Memory.
