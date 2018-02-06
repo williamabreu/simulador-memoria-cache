@@ -81,7 +81,7 @@ class MainMemory:
     #
     # return None.
     #
-    def setMainMemoryData(self, address, value):
+    def setDado(self, address, value):
         try:
             self.__verificaWord(value)
             end = self.getEndMem(address)
@@ -100,7 +100,7 @@ class MainMemory:
     #
     # return None.
     #
-    def getMainMemoryData(self, address, value):
+    def getDado(self, address, value):
         try:
             self.__verificaWord(value)
             value.set( self.__dataList[self.getEndMem(address)] )

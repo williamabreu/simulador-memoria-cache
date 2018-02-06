@@ -21,7 +21,7 @@ def main(filePath):
 
     simulador = Interpreter(arquivoComandos)
     relatorio = simulador.getRelatorio().gerarRelatorio()
-
+    
     print(relatorio)
 
     arquivoComandos.close()

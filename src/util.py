@@ -35,22 +35,29 @@ class Word:
     #
     # @raise TypeError, ValueError.
     #
-    def __init__(self, valor):
-        if type(valor) != int:
+    def __init__(self, valor=None):
+        if type(valor) != int and valor != None:
             raise TypeError('Valor da word deve ser int.')
 
-        if valor.bit_length() > 32:
-            raise ValueError('Tamanho da word deve ser no máx. 32 bits.')
+        self.__valor = None
 
-        self.__valor = valor
+        if valor != None:
+            self.set(valor)
     
     # Método set, para mudar o valor da variável.
     #
     # @param valor : int - novo valor.
     #
+    # @raise TypeError, ValueError.
+    #
     # @return None.
     #
     def set(self, valor):
+        if type(valor) != int and valor != None:
+            raise TypeError('Valor da word deve ser int.')
+        if valor.bit_length() > 32:
+            raise ValueError('Tamanho da word deve ser no máx. 32 bits.')
+
         self.__valor = valor
     
     # Método para obter o valor da variável.

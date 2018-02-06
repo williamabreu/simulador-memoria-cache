@@ -28,11 +28,12 @@ class Memory:
 
     # metodo de cache nao implementado
     def setData(self, address, data):
-        self.__cache.setCacheData(address, data)
-        self.__mem.setMainMemoryData(address, data)
+        #self.__cache.setCacheData(address, data)
+        self.__mem.setDado(address, data)
 
     def setInstruction(self, address, instruction):
-        self.__cache.setCacheInstruction(address, instruction)
+        #self.__cache.setCacheInstruction(address, instruction)
+        self.setData(address, instruction)
 
     # ok
     def duplicate(self):

@@ -4,6 +4,8 @@ from src.MainMemory import MainMemory
 from src.Memory import Memory
 from src.Processor import Processor
 from src.Relatorio import Relatorio
+from src.util import Word
+from src.constantes import *
 
 
 
@@ -76,7 +78,7 @@ class Interpreter:
         # e MP já criados anteriormente.
 
         'cp': '<n>',
-        # Cria um processador com n núcleos, sendo que cada núcleo terá uma hierarquia de
+        # Cria um __processador com n núcleos, sendo que cada núcleo terá uma hierarquia de
         # memória baseada em MEM.
 
         'ri': '<n> <addr>',
@@ -262,8 +264,6 @@ class Interpreter:
     # @return None.
     #
     def executarComando(self, cmd, args):
-        relatorio = self.__relatorio
-
         if cmd not in ('ri', 'wi', 'rd', 'wd', 'asserti', 'assertd'):
             raise RuntimeError('Comando inválido.')
 
@@ -297,22 +297,60 @@ class Interpreter:
     # Executa comando específico.
     #
     def ri(self, n, addr):
-        print('ri')
+        pointer = Word(None)
+        x = self.__PROC.getCore(n).getInstrucao(addr, pointer)
+
+        if x == FOUND_IN_L1:
+            self.__relatorio.hit1()
+        elif x == FOUND_IN_L2:
+            self.__relatorio.hit2()
+        elif x == FOUND_IN_L3:
+            self.__relatorio.hit3()
+        elif x == FOUND_IN_MEM:
+            self.__relatorio.hit4()
+        else:
+            self.__relatorio.erro()
+
+        if pointer.get() != None:
+            print('Obtida instrução "{}" no nivel {}'.format(pointer.get(), x))
+        else:
+            print('Endereço fora da faixa.')
 
     # Executa comando específico.
     #
     def wi(self, n, addr, value):
-        print('wi')
+        self.wd(n, addr, value)
 
     # Executa comando específico.
     #
     def rd(self, n, addr):
-        print('rd')
+        pointer = Word(None)
+        x = self.__PROC.getCore(n).getDado(addr, pointer)
+
+        if x == FOUND_IN_L1:
+            self.__relatorio.hit1()
+        elif x == FOUND_IN_L2:
+            self.__relatorio.hit2()
+        elif x == FOUND_IN_L3:
+            self.__relatorio.hit3()
+        elif x == FOUND_IN_MEM:
+            self.__relatorio.hit4()
+        else:
+            self.__relatorio.erro()
+
+        if pointer.get() != None:
+            print('Obtido dado "{}" no nivel {}'.format(pointer.get(), x))
+        else:
+            print('Endereço fora da faixa.')
 
     # Executa comando específico.
     #
     def wd(self, n, addr, value):
-        print('wd')
+        self.__PROC.getCore(n)
+        pointer = Word(value)
+        self.__MP.setDado(addr, pointer)
+
+        print('Salvo na memória.')
 
     # Executa comando específico.
     #

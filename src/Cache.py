@@ -169,7 +169,7 @@ class Cache:
             return FOUND_IN_L3
         else:
             # antes insere linha em l3 l2 l1
-            return mainMem.getMainMemeoryData(address, data) # FOUND_IN_MEM
+            return mainMem.getDado(address, data) # FOUND_IN_MEM
 
     # Busca uma instrução na cache pelo endereço, retorna o nível em que foi
     # encontrado.
@@ -193,7 +193,7 @@ class Cache:
             return FOUND_IN_L3
         else:
             # antes insere linha em l3 l2 l1
-            return mainMem.getMainMemeoryData(address, instruction)
+            return mainMem.getDado(address, instruction)
 
     # Insere um dado em toda a hierarquia de cache inclusivo. Retorna
     # o nível em que o valor foi encontrado na hierarquia.

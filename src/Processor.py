@@ -1,11 +1,14 @@
-
 class Processor:
-    processador=[]
+    def __init__(self, mem, ncores):
+        self.__processador = [None] * ncores
+        self.__processador[0] = mem
 
-    def __init__createProcessor(mem ,ncores):
-        self.processador=[None]* ncores
-        self.processador[0]=mem
-        for x in range(1,ncores):
-            self.processador[x]=Memory.duplicateMemory(mem)
-        return processador
+        for x in range(1, ncores):
+            self.__processador[x] = mem.duplicate()
+
+    def getNumCores(self):
+        return len(self.__processador)
+
+    def getCore(self, n):
+        return self.__processador[n]
 
