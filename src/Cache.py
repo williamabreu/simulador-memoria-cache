@@ -1,4 +1,5 @@
 from src.SACache import SACache
+from src.constantes import *
 
 class Cache:
     # estático:
@@ -151,12 +152,24 @@ class Cache:
     #
     # @param mainMem : MainMemory - referência para a memória principal.
     # @param address : int - endreço de 32 bits.
-    # @param value : Word - palavra a ser retornada de 32 bits.
+    # @param data : Word - palavra a ser retornada de 32 bits.
+    #
+    # @raise TypeError, ValueError.
     #
     # @return int.
     #
-    def getCacheData(self, mainMem, address, value):
-        raise NotImplementedError('Método não implementado.')
+    def getCacheData(self, mainMem, address, data):
+        if self.getL1d().getDado(address, data) == CACHE_HIT:
+            return FOUND_IN_L1
+        elif self.getL2().getDado(address, data) == CACHE_HIT:
+            # antes insere linha em l1
+            return FOUND_IN_L2
+        elif self.getL3().getDado(address, data) == CACHE_HIT:
+            # antes insere linha em l2 l1
+            return FOUND_IN_L3
+        else:
+            # antes insere linha em l3 l2 l1
+            return mainMem.getMainMemeoryData(address, data) # FOUND_IN_MEM
 
     # Busca uma instrução na cache pelo endereço, retorna o nível em que foi
     # encontrado.
@@ -165,10 +178,22 @@ class Cache:
     # @param address : int - endreço de 32 bits.
     # @param value : Word - palavra a ser retornada de 32 bits.
     #
+    # @raise TypeError, ValueError.
+    #
     # @return int.
     #
-    def getCacheInst(self, mmem, address, value):
-        raise NotImplementedError('Método não implementado.')
+    def getCacheInst(self, mainMem, address, instruction):
+        if self.getL1i().getDado(address, instruction) == CACHE_HIT:
+            return FOUND_IN_L1
+        elif self.getL2().getDado(address, instruction) == CACHE_HIT:
+            # antes insere linha em l1
+            return FOUND_IN_L2
+        elif self.getL3().getDado(address, instruction) == CACHE_HIT:
+            # antes insere linha em l2 l1
+            return FOUND_IN_L3
+        else:
+            # antes insere linha em l3 l2 l1
+            return mainMem.getMainMemeoryData(address, instruction)
 
     # Insere um dado em toda a hierarquia de cache inclusivo. Retorna
     # o nível em que o valor foi encontrado na hierarquia.

@@ -109,6 +109,13 @@ class MainMemory:
 
         return FOUND_IN_MEM
 
+    # Retorna cópia dos dados, para depuração.
+    #
+    # @return list.
+    #
+    def getList(self):
+        return list(self.__dataList)
+
     # Verifica corretude do endereço.
     #
     # @param address : int - endereço de 32 bits.
