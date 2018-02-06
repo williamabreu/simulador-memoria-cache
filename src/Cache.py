@@ -120,7 +120,75 @@ class Cache:
 
         return out
 
+    # Linha de dados.
+    # Método para inserir em todos os níveis da cache uma linha buscada na
+    # memória através do endereço dado, mantendo a coerência da cache inclusiva,
+    # pois os tamanhos de linha de cada nível pode ser diferente.
+    #
+    # @param mainMem : MainMemory - referência para a memória principal.
+    # @param address : int - endreço de 32 bits.
+    #
+    # @return None.
+    #
+    def setLineCacheData(self, mainMem, address):
+        raise NotImplementedError('Método não implementado.')
 
+    # Linha de instruções.
+    # Método para inserir em todos os níveis da cache uma linha buscada na
+    # memória através do endereço dado, mantendo a coerência da cache inclusiva,
+    # pois os tamanhos de linha de cada nível pode ser diferente.
+    #
+    # @param mainMem : MainMemory - referência para a memória principal.
+    # @param address : int - endreço de 32 bits.
+    #
+    # @return None.
+    #
+    def setLineCacheInst(self, mainMem, address):
+        raise NotImplementedError('Método não implementado.')
+
+    # Busca um dado na cache pelo endereço, retorna o nível em que foi
+    # encontrado.
+    #
+    # @param mainMem : MainMemory - referência para a memória principal.
+    # @param address : int - endreço de 32 bits.
+    # @param value : Word - palavra a ser retornada de 32 bits.
+    #
+    # @return int.
+    #
+    def getCacheData(self, mainMem, address, value):
+        raise NotImplementedError('Método não implementado.')
+
+    # Busca uma instrução na cache pelo endereço, retorna o nível em que foi
+    # encontrado.
+    #
+    # @param mainMem : MainMemory - referência para a memória principal.
+    # @param address : int - endreço de 32 bits.
+    # @param value : Word - palavra a ser retornada de 32 bits.
+    #
+    # @return int.
+    #
+    def getCacheInst(self, mmem, address, value):
+        raise NotImplementedError('Método não implementado.')
+
+    # Insere um dado em toda a hierarquia de cache inclusivo. Retorna
+    # o nível em que o valor foi encontrado na hierarquia.
+    #
+    # @param address : int - endereço de 32 bits.
+    # @param value : Word - palavra de 32 bits de retorno.
+    #
+    # @return int.
+    def setCacheData(self, address, value):
+        raise NotImplementedError('Método não implementado.')
+
+    # Insere uma instrução em toda a hierarquia de cache inclusivo. Retorna
+    # o nível em que o valor foi encontrado na hierarquia.
+    #
+    # @param address : int - endereço de 32 bits.
+    # @param value : Word - palavra de 32 bits de retorno.
+    #
+    # @return int.
+    def setCacheInst(self, address, value):
+        raise NotImplementedError('Método não implementado.')
 
 
 ### FUNÇÕES DE INTERFACE (requisitos do Dr. Saúde):
@@ -129,34 +197,28 @@ class Cache:
 def createCache(l1d, l1i, l2, l3):
     return Cache(l1d, l1i, l2, l3)
 
-def fetchCacheData(sac, mmem, address, value):
-    pass
-    # void fetchCacheData(Cache sac, MainMemory mmem, int address, int value);
+def fetchCacheData(c, mmem, address):
+    c.setLineCacheData(mmem, address)
 
 
-def fetchCacheInstruction(sac, mmem, address, value):
-    pass
-    # void fetchCacheInstruction(Cache sac, MainMemory mmem, int address, int value);
+def fetchCacheInstruction(c, mmem, address):
+    c.setLineCacheData(mmem, address)
 
 
 def getCacheData(c, mmem, address, value):
-    pass
-    # int getCacheData(Cache c, MainMemory mmem, int address, int * value);
+    return c.getCacheData(mmem, address, value)
 
 
 def getCacheInstruction(c, mmem, address, value):
-    pass
-    # int getCacheInstruction(Cache c, MainMemory mmem, int address, int * value);
+    return c.getCacheInst(mmem, address, value)
 
 
 def setCacheData(c, address, value):
-    pass
-    # void setCacheData(Cache c, int address, int value);
+    return c.setCacheData(address, value)
 
 
 def setCacheInstruction(c, address, value):
-    pass
-    # void setCacheInstruction(Cache c, int address, int value);
+    return c.setCacheInst(address, value)
 
 
 def duplicateCache(c):

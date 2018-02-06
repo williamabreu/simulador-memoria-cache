@@ -6,7 +6,13 @@ from traceback import print_exc
 
 
 def main(filePath):
-    arquivoComandos = open(filePath)
+    arquivoComandos = None
+
+    try:
+        arquivoComandos = open(filePath)
+    except BaseException as e:
+        if arquivoComandos != None: arquivoComandos.close()
+        raise e
 
     simulador = Interpreter(arquivoComandos)
     relatorio = simulador.getRelatorio().gerarRelatorio()
