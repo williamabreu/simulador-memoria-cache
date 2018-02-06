@@ -354,17 +354,21 @@ class Interpreter:
     # Executa comando específico.
     #
     def asserti(self, n, addr, level, value):
-        raise NotImplementedError('Interpretador não sabe executar asserti.')
+        pointer = Word()
+        x = self.__PROC.getCore(n).getInstrucao(addr, pointer)
+
+        if x == level and pointer.get() == value.get():
+            print('OK.')
+        else:
+            print('ERRADO.')
 
     # Executa comando específico.
     #
     def assertd(self, n, addr, level, value):
-        raise NotImplementedError('Interpretador não sabe executar assertd.')
+        pointer = Word()
+        x = self.__PROC.getCore(n).getDado(addr, pointer)
 
-
-
-
-
-
-
-
+        if x == level and pointer.get() == value.get():
+            print('OK.')
+        else:
+            print('ERRADO.')

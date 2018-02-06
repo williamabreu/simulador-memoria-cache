@@ -144,4 +144,11 @@ class MainMemory:
         if type(word) != Word:
             raise TypeError('Word inválida.')
 
+    # Pega uma linha inteira que cabe no L3.
+    # @param start : int - endereço inicial.
+    # @return list.
+    #
+    def getMemoryLine(self, start, tamLinhaL3):
+        return [self.__mem[i].copy() for i in range(start, tamLinhaL3)]
+
 

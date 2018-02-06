@@ -79,3 +79,6 @@ class Memory:
 
         if type(mainMem) != MainMemory:
             raise TypeError('Tipo objeto Memory incorreto.')
+
+
+

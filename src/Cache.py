@@ -132,7 +132,12 @@ class Cache:
     # @return None.
     #
     def setLineCacheData(self, mainMem, address):
-        raise NotImplementedError('Método não implementado.')
+        tamLinhaL3 = self.getL3().getTamLinha()
+        address = self.firstAddressLine(address)
+        linhaL3 = mainMem.getMemoryLine(address, tamLinhaL3)
+        self.__l1d.setLine(address, linhaL3[:self.__l1d.getTamLinha()])
+        self.__l2.setLine(address, linhaL3[:self.__l2.getTamLinha()])
+        self.__l3.setLine(address, linhaL3)
 
     # Linha de instruções.
     # Método para inserir em todos os níveis da cache uma linha buscada na
@@ -145,7 +150,12 @@ class Cache:
     # @return None.
     #
     def setLineCacheInst(self, mainMem, address):
-        raise NotImplementedError('Método não implementado.')
+        tamLinhaL3 = self.getL3().getTamLinha()
+        address = self.firstAddressLine(address)
+        linhaL3 = mainMem.getMemoryLine(address, tamLinhaL3)
+        self.__l1i.setLine(address, linhaL3[:self.__l1i.getTamLinha()])
+        self.__l2.setLine(address, linhaL3[:self.__l2.getTamLinha()])
+        self.__l3.setLine(address, linhaL3)
 
     # Busca um dado na cache pelo endereço, retorna o nível em que foi
     # encontrado.
@@ -162,13 +172,13 @@ class Cache:
         if self.getL1d().getDado(address, data) == CACHE_HIT:
             return FOUND_IN_L1
         elif self.getL2().getDado(address, data) == CACHE_HIT:
-            # antes insere linha em l1
+            self.setLineCacheData(mainMem, address)
             return FOUND_IN_L2
         elif self.getL3().getDado(address, data) == CACHE_HIT:
-            # antes insere linha em l2 l1
+            self.setLineCacheData(mainMem, address)
             return FOUND_IN_L3
         else:
-            # antes insere linha em l3 l2 l1
+            self.setLineCacheData(mainMem, address)
             return mainMem.getDado(address, data) # FOUND_IN_MEM
 
     # Busca uma instrução na cache pelo endereço, retorna o nível em que foi
@@ -186,13 +196,13 @@ class Cache:
         if self.getL1i().getDado(address, instruction) == CACHE_HIT:
             return FOUND_IN_L1
         elif self.getL2().getDado(address, instruction) == CACHE_HIT:
-            # antes insere linha em l1
+            self.setLineCacheInst(mainMem, address)
             return FOUND_IN_L2
         elif self.getL3().getDado(address, instruction) == CACHE_HIT:
-            # antes insere linha em l2 l1
+            self.setLineCacheInst(mainMem, address)
             return FOUND_IN_L3
         else:
-            # antes insere linha em l3 l2 l1
+            self.setLineCacheInst(mainMem, address)
             return mainMem.getDado(address, instruction)
 
     # Insere um dado em toda a hierarquia de cache inclusivo. Retorna
@@ -214,6 +224,16 @@ class Cache:
     # @return int.
     def setCacheInst(self, address, value):
         raise NotImplementedError('Método não implementado.')
+
+    # Formata o endereço para pegar a linha toda.
+    # @param addr : int - endereço de 32 bits.
+    # @return int.]
+    #
+    def firstAddressLine(self, addr):
+        offset = self.getL3().getTamOffset()
+        addr >>= offset
+        addr <<= offset
+        return addr
 
 
 ### FUNÇÕES DE INTERFACE (requisitos do Dr. Saúde):
