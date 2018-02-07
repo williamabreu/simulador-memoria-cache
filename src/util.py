@@ -10,7 +10,7 @@ def isPotenciaDois(x):
     
     while x != 1:
         if x % 2 == 0:
-            x //= 2
+            x >>= 1
         else:
             return False
     
@@ -24,8 +24,19 @@ def isPotenciaDois(x):
 # @return int.
 #
 def log2(x):
-    import math
-    return int(math.log(x, 2))
+    if x == 0:
+        raise ArithmeticError('Impossível.')
+    
+    cont = 0
+    
+    while x != 1:
+        if x % 2 == 0:
+            x >>= 1
+            cont += 1
+        else:
+            raise ArithmeticError('Impossível.')
+    
+    return cont
 
 
 class Word:

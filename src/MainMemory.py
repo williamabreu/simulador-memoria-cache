@@ -70,7 +70,7 @@ class MainMemory:
     #
     def getEndMem(self, address):
         self.__verificaAddress(address)
-        return address >> ( 32 - log2(self.__totalSize // 4) )
+        return address >> 2 #( 32 - log2(self.__totalSize // 4) )
 
     # Setar um endereço da memória com determinado valor.
     #
