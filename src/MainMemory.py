@@ -75,7 +75,7 @@ class MainMemory:
     # Setar um endereço da memória com determinado valor.
     #
     # @param address : int - endereço de 32 bits.
-    # @param value : int - valor a ser colocado.
+    # @param value : Word - valor a ser colocado.
     #
     # @raise TypeError.
     #
@@ -94,7 +94,7 @@ class MainMemory:
     # Obter o valor de um requesitado endereço da memória.
     #
     # @param address : int - endereço de 32bits.
-    # @param value : int - valor a ser recuperado
+    # @param value : Word - valor a ser recuperado
     #
     # @raise TypeError.
     #
@@ -151,5 +151,27 @@ class MainMemory:
     def getMemoryLine(self, start, tamLinha):
         # print([self.__dataList[i] for i in range(start//4, start//4 + tamLinha)])
         return [self.__dataList[i] for i in range(start//4, start//4 + tamLinha)]
+
+
+### Funções de interface (adapter):
+
+
+def createMainMemory(ramsize, vmsize):
+    return MainMemory(ramsize, vmsize)
+
+
+def getMainMemoryData(mem, address, value):
+    return mem.getDado(address, value)
+
+
+def setMainMemoryData(mem, address, value):
+    return mem.setDado(address, value)
+
+
+
+
+
+
+
 
 

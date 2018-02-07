@@ -91,4 +91,28 @@ class Memory:
             raise TypeError('Tipo objeto Memory incorreto.')
 
 
+### Funções de interface (adapter):
 
+
+def createMemory(c, mem):
+    return Memory(c, mem)
+
+
+def getData(mem, address, value):
+    return mem.getDado(address, value)
+
+
+def getInstruction(mem, address, value):
+    return mem.getInstrucao(address, value)
+
+
+def setData(mem, address, value):
+    return mem.setDado(address, value)
+
+
+def setInstruction(mem, address, value):
+    return mem.setInstrucao(address, value)
+
+
+def duplicateMemory(mem):
+    return mem.duplicate()

@@ -223,7 +223,7 @@ class SACache:
             raise ValueError('Endereço inválido.')
 
 
-### FUNÇÕES DE INTERFACE (requisitos do Dr. Saúde):
+### FUNÇÕES DE INTERFACE (adapter):
 
 
 def createSACache(c, a, l):

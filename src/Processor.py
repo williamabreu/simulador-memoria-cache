@@ -33,3 +33,8 @@ class Processor:
     def getCore(self, n):
         return self.__processador[n]
 
+
+### Função de interface (adpter):
+
+def createProcessor(mem, ncores):
+    return Processor(mem, ncores)

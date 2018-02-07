@@ -260,7 +260,7 @@ class TACache:
                 raise TypeError('Elementos da linha devem ser Word.')
 
 
-### FUNÇÕES DE INTERFACE (requisitos do Dr. Saúde):
+### FUNÇÕES DE INTERFACE (adapter):
 
 
 def createTACache(c, l):
