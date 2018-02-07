@@ -116,3 +116,4 @@ def setInstruction(mem, address, value):
 
 def duplicateMemory(mem):
     return mem.duplicate()
+

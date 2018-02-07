@@ -7,13 +7,13 @@
 def isPotenciaDois(x):
     if x == 0:
         return False
-
+    
     while x != 1:
         if x % 2 == 0:
-            x >>= 1
+            x //= 2
         else:
             return False
-
+    
     return True
 
 
@@ -24,19 +24,8 @@ def isPotenciaDois(x):
 # @return int.
 #
 def log2(x):
-    if x == 0:
-        raise ValueError('Impossível.')
-
-    cont = 0
-
-    while x != 1:
-        if x % 2 == 0:
-            x >>= 1
-            cont += 1
-        else:
-            raise ValueError('Impossível.')
-
-    return cont
+    import math
+    return int(math.log(x, 2))
 
 
 class Word:

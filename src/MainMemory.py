@@ -75,7 +75,7 @@ class MainMemory:
     # Setar um endereço da memória com determinado valor.
     #
     # @param address : int - endereço de 32 bits.
-    # @param value : Word - valor a ser colocado.
+    # @param value : int - valor a ser colocado.
     #
     # @raise TypeError.
     #
@@ -94,7 +94,7 @@ class MainMemory:
     # Obter o valor de um requesitado endereço da memória.
     #
     # @param address : int - endereço de 32bits.
-    # @param value : Word - valor a ser recuperado
+    # @param value : int - valor a ser recuperado
     #
     # @raise TypeError.
     #
@@ -166,12 +166,3 @@ def getMainMemoryData(mem, address, value):
 
 def setMainMemoryData(mem, address, value):
     return mem.setDado(address, value)
-
-
-
-
-
-
-
-
-

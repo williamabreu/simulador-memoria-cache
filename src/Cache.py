@@ -132,6 +132,9 @@ class Cache:
     # @return None.
     #
     def setLineCacheData(self, mainMem, address):
+        #####################
+        # Com problemas...
+        ####################
         offsetl3 = self.getL3().getTamOffset()
         offsetl2 = self.getL2().getTamOffset()
         offsetl1 = self.getL1d().getTamOffset()
@@ -165,6 +168,9 @@ class Cache:
     # @return None.
     #
     def setLineCacheInst(self, mainMem, address):
+        #####################
+        # Com problemas...
+        ####################
         offsetl3 = self.getL3().getTamOffset()
         offsetl2 = self.getL2().getTamOffset()
         offsetl1 = self.getL1i().getTamOffset()
@@ -243,6 +249,9 @@ class Cache:
     # @return int.
     #
     def setCacheData(self, address, value):
+        #####################
+        # Não feito...
+        ####################
         if self.getL1d().setDado(address, value) == CACHE_HIT:
             return FOUND_IN_L1
         elif self.getL2().setDado(address, value) == CACHE_HIT:
@@ -261,6 +270,9 @@ class Cache:
     # @return int.
     #
     def setCacheInst(self, address, value):
+        #####################
+        # Não feito...
+        ####################
         if self.getL1i().setDado(address, value) == CACHE_HIT:
             return FOUND_IN_L1
         elif self.getL2().setDado(address, value) == CACHE_HIT:
@@ -272,7 +284,7 @@ class Cache:
 
     # Formata o endereço para pegar a linha toda.
     # @param addr : int - endereço de 32 bits.
-    # @return int.
+    # @return int.]
     #
     def firstAddressLine(self, offset, addr):
         # offset = self.getL3().getTamOffset()
